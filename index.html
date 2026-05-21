@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="NEO_VAULT">
     <meta name="theme-color" content="#06080c">
 
-    <title>NEO_VAULT V2.1 // Fullscreen Preview</title>
+    <title>NEO_VAULT V2.2 // Secure & Optimized</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -71,13 +71,11 @@
             z-index: 10;
             gap: 15px;
             padding-top: env(safe-area-inset-top, 1rem); 
-            /* เพิ่ม Transition เพื่อให้สไลด์ขึ้นได้นุ่มนวล */
             transition: var(--transition-smooth);
             transform: translateY(0);
             transform-origin: top;
         }
 
-        /* 🟢 FULLSCREEN MODE CSS (ระบบซ่อนแถบเมนู) 🟢 */
         body.fullscreen-mode nav {
             transform: translateY(-100%);
             height: 0 !important;
@@ -88,24 +86,10 @@
             border-bottom: none;
             pointer-events: none;
         }
-        body.fullscreen-mode .main-layout {
-            height: 100dvh !important;
-        }
-        /* ดันขอบ Header ลงมานิดนึงในโหมดเต็มจอ เพื่อหลบกล้อง/รอยแหว่ง iPhone */
-        body.fullscreen-mode .preview-header {
-            padding-top: calc(env(safe-area-inset-top, 1rem) + 0.5rem);
-        }
+        body.fullscreen-mode .main-layout { height: 100dvh !important; }
+        body.fullscreen-mode .preview-header { padding-top: calc(env(safe-area-inset-top, 1rem) + 0.5rem); }
 
-        .brand {
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 1.2px;
-            color: var(--text-light);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-shrink: 0;
-        }
+        .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: 1.2px; color: var(--text-light); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         .brand i { color: var(--accent-green); animation: pulseGlow 3s infinite; border-radius: 50%; }
         .brand span { color: var(--accent-emerald); }
 
@@ -128,6 +112,13 @@
 
         .sidebar { background: rgba(5, 8, 6, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-right: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; overflow: hidden; }
         .sidebar-controls { display: flex; gap: 10px; flex-shrink: 0; }
+        
+        /* Search Box Styles */
+        .search-container { position: relative; flex-shrink: 0; }
+        .search-container input { width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); color: var(--text-light); padding: 10px 15px 10px 38px; border-radius: 10px; outline: none; font-size: 0.9rem; transition: var(--transition-smooth); }
+        .search-container input:focus { border-color: var(--accent-green); background: rgba(0, 255, 102, 0.05); }
+        .search-container i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: 0.9rem; }
+
         .action-btn { background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald)); color: #050806; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--accent-green-glow); transition: var(--transition-smooth); flex: 1; min-height: 44px; }
         .action-btn:active { transform: scale(0.96); }
 
@@ -147,9 +138,10 @@
         .ctrl-btns { display: flex; gap: 8px; flex-shrink: 0; }
         
         .icon-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-gray); min-width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .icon-btn:hover { background: rgba(0, 255, 102, 0.05); color: var(--text-light); }
         .icon-btn:active { transform: scale(0.92); background: rgba(0, 255, 102, 0.1); }
 
-        .code-area { flex: 1; background: transparent; border: none; resize: none; outline: none; padding: 1.5rem; color: #c9decb; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 16px; width: 100%; }
+        .code-area { flex: 1; background: transparent; border: none; resize: none; outline: none; padding: 1.5rem; color: #c9decb; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 16px; width: 100%; tab-size: 2; }
 
         .preview-zone { background: white; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         
@@ -206,14 +198,14 @@
         <div class="brand"><i class="fa-solid fa-layer-group"></i> NEO<span>VAULT</span></div>
         
         <div class="mode-switcher">
-            <button class="mode-btn active" id="mode-code" onclick="switchSystemMode('code')"><i class="fa-solid fa-code"></i> CODE</button>
-            <button class="mode-btn" id="mode-prompt" onclick="switchSystemMode('prompt')"><i class="fa-solid fa-brain"></i> PROMPT</button>
+            <button class="mode-btn active" id="mode-code" onclick="switchSystemMode('code')" aria-label="Switch to Code Mode"><i class="fa-solid fa-code"></i> CODE</button>
+            <button class="mode-btn" id="mode-prompt" onclick="switchSystemMode('prompt')" aria-label="Switch to Prompt Mode"><i class="fa-solid fa-brain"></i> PROMPT</button>
         </div>
 
         <div class="view-switcher">
-            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')"><i class="fa-solid fa-list"></i> Vault</button>
-            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')"><i class="fa-solid fa-pen-to-square"></i> Editor</button>
-            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')"><i class="fa-solid fa-play"></i> View</button>
+            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')" aria-label="View Vault List"><i class="fa-solid fa-list"></i> Vault</button>
+            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')" aria-label="View Editor"><i class="fa-solid fa-pen-to-square"></i> Editor</button>
+            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')" aria-label="View Output"><i class="fa-solid fa-play"></i> View</button>
         </div>
     </nav>
 
@@ -222,41 +214,49 @@
         
         <aside class="sidebar">
             <div class="sidebar-controls">
-                <button class="action-btn" id="actionBtn" onclick="addNewItem()"><i class="fa-solid fa-plus"></i> New</button>
-                <button class="icon-btn" onclick="exportData()" title="Backup Data"><i class="fa-solid fa-file-export"></i></button>
-                <button class="icon-btn" onclick="document.getElementById('importFile').click()" title="Restore Data"><i class="fa-solid fa-file-import"></i></button>
+                <button class="action-btn" id="actionBtn" onclick="addNewItem()" aria-label="Create New Item"><i class="fa-solid fa-plus"></i> New</button>
+                <button class="icon-btn" onclick="exportData()" title="Backup Data" aria-label="Backup Data"><i class="fa-solid fa-file-export"></i></button>
+                <button class="icon-btn" onclick="document.getElementById('importFile').click()" title="Restore Data" aria-label="Restore Data"><i class="fa-solid fa-file-import"></i></button>
                 <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
             </div>
+            
+            <!-- NEW: Search Box -->
+            <div class="search-container">
+                <i class="fa-solid fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search title or content..." aria-label="Search snippets">
+            </div>
+
             <div class="list-container" id="listContainer"></div>
         </aside>
 
         <section class="editor-zone">
             <div class="zone-header">
-                <input type="text" id="titleInput" value="Untitled" oninput="saveCurrentData()">
+                <!-- Removed inline oninput -->
+                <input type="text" id="titleInput" value="Untitled" aria-label="Document Title">
                 <div class="ctrl-btns">
-                    <button class="icon-btn" id="templateBtn" onclick="insertTemplate()"><i class="fa-solid fa-code"></i></button>
-                    <button class="icon-btn" id="copyBtn" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
-                    <button class="icon-btn" onclick="deleteCurrentItem()" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" id="templateBtn" onclick="insertTemplate()" title="Insert Template" aria-label="Insert Template"><i class="fa-solid fa-code"></i></button>
+                    <button class="icon-btn" id="copyBtn" onclick="copyToClipboard()" title="Copy to Clipboard" aria-label="Copy to Clipboard"><i class="fa-solid fa-copy"></i></button>
+                    <button class="icon-btn" onclick="deleteCurrentItem()" title="Delete Item" aria-label="Delete Item" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
-            <textarea class="code-area" id="editor" placeholder="Write here..." oninput="liveRender()"></textarea>
+            <!-- Removed inline oninput -->
+            <textarea class="code-area" id="editor" placeholder="Write here..." aria-label="Code Editor"></textarea>
         </section>
 
-        <!-- 3. LIVE PREVIEW ZONE -->
         <section class="preview-zone">
             <div class="preview-header">
                 <div class="status" id="previewStatus"><span class="dot"></span> LIVE OUTPUT</div>
                 
-                <!-- ชุดสถานะ & ปุ่มขยายเต็มจอ -->
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div id="saveStatus" style="font-size: 0.75rem; color: #00ff66; font-weight: 600;">Saved</div>
-                    <button class="icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()" style="min-width: 38px; height: 38px; border-radius: 8px;">
+                    <button class="icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="Toggle Fullscreen" aria-label="Toggle Fullscreen" style="min-width: 38px; height: 38px; border-radius: 8px;">
                         <i class="fa-solid fa-expand"></i>
                     </button>
                 </div>
             </div>
             <div class="iframe-wrapper">
-                <iframe id="outputFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+                <!-- SECURITY FIX: Removed allow-same-origin to prevent iframe from accessing parent localStorage -->
+                <iframe id="outputFrame" sandbox="allow-scripts" title="Preview Output"></iframe>
             </div>
         </section>
 
@@ -275,8 +275,10 @@
         let currentMode = 'code';
         let storage = [];
         let activeId = null;
-        let isFullscreen = false; // สถานะ Fullscreen
+        let isFullscreen = false;
+        let debounceTimer; // For performance optimization
 
+        // Initialize System
         function initSystemMode() {
             const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
             storage = JSON.parse(localStorage.getItem(key)) || (currentMode === 'code' ? defaultCodeData : defaultPromptData);
@@ -286,6 +288,9 @@
             document.getElementById('editor').style.fontFamily = currentMode === 'code' ? "'Fira Code', monospace" : "'Plus Jakarta Sans', sans-serif";
             document.getElementById('previewStatus').innerHTML = currentMode === 'code' ? `<span class="dot"></span> WEB PREVIEW` : `<span class="dot"></span> PROMPT VIEW`;
             document.getElementById('templateBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-laptop-code"></i>` : `<i class="fa-solid fa-file-invoice"></i>`;
+            
+            // Clear search on switch
+            document.getElementById('searchInput').value = '';
             
             renderSidebar();
             selectItem(activeId);
@@ -298,19 +303,27 @@
             initSystemMode();
         }
 
-        function updateLocalStorage() {
-            const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
-            localStorage.setItem(key, JSON.stringify(storage));
-            const statusNode = document.getElementById('saveStatus');
-            statusNode.innerText = "Saving...";
-            statusNode.style.color = "#fff";
-            setTimeout(() => { statusNode.innerText = "Saved"; statusNode.style.color = "#00ff66"; }, 400);
-        }
+        // Feature: Search / Filter Logic
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderSidebar(e.target.value);
+        });
 
-        function renderSidebar() {
+        function renderSidebar(filterText = '') {
             const container = document.getElementById('listContainer');
             container.innerHTML = '';
-            storage.forEach((item, index) => {
+            const lowerFilter = filterText.toLowerCase();
+
+            const filteredStorage = storage.filter(item => 
+                (item.title && item.title.toLowerCase().includes(lowerFilter)) ||
+                (item.code && item.code.toLowerCase().includes(lowerFilter))
+            );
+
+            if (filteredStorage.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:20px; font-size: 0.9rem;">No results found.</p>`;
+                return;
+            }
+
+            filteredStorage.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = `snippet-card ${item.id === activeId ? 'active' : ''}`;
                 card.onclick = () => selectItem(item.id);
@@ -326,13 +339,45 @@
             if(current) {
                 document.getElementById('titleInput').value = current.title;
                 document.getElementById('editor').value = current.code;
-                liveRender(false);
-                renderSidebar();
+                liveRender(); // Render immediately on select
+                
+                // Keep filter active if user searched
+                const currentFilter = document.getElementById('searchInput').value;
+                renderSidebar(currentFilter);
             }
             if(window.innerWidth <= 900) switchMobileView('editor');
         }
 
-        function liveRender(shouldSave = true) {
+        // Fix: Debounce Logic for Input
+        function handleInputActivity() {
+            const statusNode = document.getElementById('saveStatus');
+            statusNode.innerText = "Typing...";
+            statusNode.style.color = "var(--text-gray)";
+
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                saveCurrentData();
+                liveRender();
+            }, 600); // Wait 600ms after user stops typing
+        }
+
+        document.getElementById('editor').addEventListener('input', handleInputActivity);
+        document.getElementById('titleInput').addEventListener('input', handleInputActivity);
+
+        // Feature: Tab Key Support in Textarea
+        document.getElementById('editor').addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                // Insert 2 spaces
+                this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 2;
+                handleInputActivity(); // Trigger save
+            }
+        });
+
+        function liveRender() {
             const code = document.getElementById('editor').value;
             const iframe = document.getElementById('outputFrame');
             
@@ -351,8 +396,6 @@
                 `;
                 iframe.srcdoc = htmlPromptView;
             }
-            
-            if(shouldSave) saveCurrentData();
         }
 
         function saveCurrentData() {
@@ -361,6 +404,30 @@
                 current.title = document.getElementById('titleInput').value;
                 current.code = document.getElementById('editor').value;
                 updateLocalStorage();
+                
+                // Refresh sidebar subtly to show title changes
+                const currentFilter = document.getElementById('searchInput').value;
+                renderSidebar(currentFilter);
+            }
+        }
+
+        // Fix: Safe Storage Handling
+        function updateLocalStorage() {
+            const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
+            const statusNode = document.getElementById('saveStatus');
+            
+            try {
+                localStorage.setItem(key, JSON.stringify(storage));
+                statusNode.innerText = "Saved";
+                statusNode.style.color = "#00ff66";
+            } catch (e) {
+                if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
+                    statusNode.innerText = "Storage Full!";
+                    statusNode.style.color = "#ff4545";
+                    alert("⚠️ คำเตือน: พื้นที่เก็บข้อมูล (LocalStorage) ของเบราว์เซอร์เต็มแล้ว\nกรุณากดปุ่ม Export (สำรองข้อมูล) และลบข้อมูลเก่าทิ้ง");
+                } else {
+                    console.error("Storage Error:", e);
+                }
             }
         }
 
@@ -372,12 +439,18 @@
             storage.unshift(newItem);
             activeId = newId;
             updateLocalStorage();
+            
+            // Clear search so the new item is visible
+            document.getElementById('searchInput').value = '';
             renderSidebar();
             selectItem(newId);
         }
 
         function deleteCurrentItem() {
             if(storage.length <= 1) return alert("Cannot delete the last item.");
+            const confirmDelete = confirm("Are you sure you want to delete this snippet?");
+            if(!confirmDelete) return;
+
             storage = storage.filter(item => item.id !== activeId);
             activeId = storage[0].id;
             updateLocalStorage();
@@ -386,19 +459,22 @@
 
         function insertTemplate() {
             const template = currentMode === 'code' 
-                ? `<!DOCTYPE html>\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\n  body { font-family: -apple-system, sans-serif; padding: 20px; }\n  .btn { background: #007aff; color: white; padding: 12px 20px; border: none; border-radius: 8px; width: 100%; font-size: 16px; }\n</style>\n<body>\n  <h2>Native iOS Style</h2>\n  <button class="btn">Tap Me</button>\n</body>`
+                ? `<!DOCTYPE html>\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\n  body { font-family: -apple-system, sans-serif; padding: 20px; }\n  .btn { background: #007aff; color: white; padding: 12px 20px; border: none; border-radius: 8px; width: 100%; font-size: 16px; cursor: pointer; }\n</style>\n<body>\n  <h2>Native iOS Style</h2>\n  <button class="btn">Tap Me</button>\n</body>`
                 : `[Role]: ผู้เชี่ยวชาญด้าน ...\n[Task]: ช่วยอธิบาย ...\n[Tone]: เข้าใจง่าย`;
             document.getElementById('editor').value = template;
-            liveRender();
+            handleInputActivity();
         }
 
         function copyToClipboard() {
             const code = document.getElementById('editor').value;
-            navigator.clipboard.writeText(code);
-            const btn = document.getElementById('copyBtn');
-            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-            btn.style.color = 'var(--accent-green)';
-            setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i>'; btn.style.color = ''; }, 1500);
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                btn.style.color = 'var(--accent-green)';
+                setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i>'; btn.style.color = ''; }, 1500);
+            }).catch(err => {
+                alert("Failed to copy text.");
+            });
         }
 
         function exportData() {
@@ -420,8 +496,14 @@
                 try {
                     const imported = JSON.parse(e.target.result);
                     if(Array.isArray(imported) && imported.length > 0) {
-                        storage = imported; updateLocalStorage(); renderSidebar(); selectItem(storage[0].id);
+                        storage = imported; 
+                        updateLocalStorage(); 
+                        document.getElementById('searchInput').value = '';
+                        renderSidebar(); 
+                        selectItem(storage[0].id);
                         alert("Data restored successfully.");
+                    } else {
+                        alert("Invalid data format.");
                     }
                 } catch (err) { alert("Error reading backup file."); }
                 event.target.value = ''; 
@@ -438,7 +520,6 @@
             document.getElementById(`btn-${viewName}`).classList.add('active');
         }
 
-        // 🟢 ฟังก์ชันควบคุมระบบ Fullscreen 🟢
         function toggleFullscreen() {
             isFullscreen = !isFullscreen;
             const btn = document.getElementById('fullscreenBtn');
