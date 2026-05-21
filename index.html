@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEO_VAULT V2 // Dual Mode (Code & Prompt)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NEO_VAULT">
+    <meta name="theme-color" content="#06080c">
+
+    <title>NEO_VAULT V2.1 // Fullscreen Preview</title>
     
-    <!-- Google Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- DESIGN SYSTEM & ANIMATIONS (CYBER GREEN) --- */
         :root {
             --bg-dark: #06080c;
             --panel-bg: rgba(10, 16, 16, 0.7);
@@ -19,7 +22,7 @@
             --accent-emerald: #00b34a;
             --text-light: #f0f5f2;
             --text-gray: #6b7a70;
-            --border: rgba(0, 255, 102, 0.08);
+            --border: rgba(0, 255, 102, 0.15);
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -37,34 +40,17 @@
                 radial-gradient(at 0% 0%, rgba(0, 255, 102, 0.08) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(0, 179, 74, 0.05) 0px, transparent 50%);
             color: var(--text-light);
-            height: 100vh;
+            height: 100dvh; 
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            overscroll-behavior: none;
         }
 
-        /* App Custom Scrollbars */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.3);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 255, 102, 0.2);
-            border-radius: 10px;
-            transition: var(--transition-smooth);
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-green);
-            box-shadow: 0 0 10px var(--accent-green);
-        }
-
-        @keyframes fadeInSlide {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 102, 0.2); border-radius: 10px; transition: var(--transition-smooth); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-green); }
 
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
@@ -77,387 +63,139 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.2rem 2rem;
-            background: rgba(6, 12, 9, 0.6);
+            padding: 1rem 1.5rem;
+            background: rgba(6, 12, 9, 0.8);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
             z-index: 10;
             gap: 15px;
+            padding-top: env(safe-area-inset-top, 1rem); 
+            /* เพิ่ม Transition เพื่อให้สไลด์ขึ้นได้นุ่มนวล */
+            transition: var(--transition-smooth);
+            transform: translateY(0);
+            transform-origin: top;
+        }
+
+        /* 🟢 FULLSCREEN MODE CSS (ระบบซ่อนแถบเมนู) 🟢 */
+        body.fullscreen-mode nav {
+            transform: translateY(-100%);
+            height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin: 0 !important;
+            opacity: 0;
+            border-bottom: none;
+            pointer-events: none;
+        }
+        body.fullscreen-mode .main-layout {
+            height: 100dvh !important;
+        }
+        /* ดันขอบ Header ลงมานิดนึงในโหมดเต็มจอ เพื่อหลบกล้อง/รอยแหว่ง iPhone */
+        body.fullscreen-mode .preview-header {
+            padding-top: calc(env(safe-area-inset-top, 1rem) + 0.5rem);
         }
 
         .brand {
             font-weight: 700;
-            font-size: 1.3rem;
-            letter-spacing: 1.5px;
+            font-size: 1.2rem;
+            letter-spacing: 1.2px;
             color: var(--text-light);
             display: flex;
             align-items: center;
-            gap: 12px;
-            transition: var(--transition-smooth);
+            gap: 10px;
             flex-shrink: 0;
         }
-        .brand:hover {
-            transform: scale(1.03);
-            text-shadow: 0 0 15px var(--accent-green-glow);
-        }
-        .brand i {
-            color: var(--accent-green);
-            animation: pulseGlow 3s infinite;
-            border-radius: 50%;
-        }
+        .brand i { color: var(--accent-green); animation: pulseGlow 3s infinite; border-radius: 50%; }
         .brand span { color: var(--accent-emerald); }
 
-        /* ระบบปุ่มสลับหมวดหมู่ตัวเลือกงานหลัก (Code / Prompt) */
-        .mode-switcher {
-            display: flex;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 4px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            gap: 4px;
-        }
-        .mode-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-gray);
-            padding: 6px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 0.85rem;
-            transition: var(--transition-smooth);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .mode-btn.active {
-            color: var(--accent-green);
-            background: rgba(0, 255, 102, 0.08);
-            border: 1px solid rgba(0, 255, 102, 0.2);
-        }
+        .mode-switcher { display: flex; background: rgba(0, 0, 0, 0.4); padding: 4px; border-radius: 12px; border: 1px solid var(--border); gap: 4px; }
+        .mode-btn { background: transparent; border: none; color: var(--text-gray); padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: var(--transition-smooth); display: flex; align-items: center; gap: 8px; }
+        .mode-btn.active { color: var(--accent-green); background: rgba(0, 255, 102, 0.08); border: 1px solid rgba(0, 255, 102, 0.2); }
 
-        /* --- MOBILE VIEW SWITCHER --- */
-        .view-switcher {
-            display: none;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 4px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            gap: 2px;
-        }
+        .view-switcher { display: none; background: rgba(255, 255, 255, 0.02); padding: 4px; border-radius: 12px; border: 1px solid var(--border); gap: 2px; margin-bottom: env(safe-area-inset-bottom, 0); }
+        .switch-btn { background: transparent; border: none; color: var(--text-gray); padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition-smooth); white-space: nowrap; }
+        .switch-btn.active { color: #000; background: var(--accent-green); box-shadow: 0 4px 15px var(--accent-green-glow); font-weight: 700; }
 
-        .switch-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-gray);
-            padding: 8px 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: var(--transition-smooth);
-            white-space: nowrap;
-        }
-
-        .switch-btn.active {
-            color: #000;
-            background: var(--accent-green);
-            box-shadow: 0 4px 15px var(--accent-green-glow);
-            font-weight: 700;
-        }
-
-        /* --- MAIN CORE LAYOUT --- */
         .main-layout {
             display: grid;
-            grid-template-columns: 300px 1fr 1fr;
+            grid-template-columns: 320px 1fr 1fr;
             flex: 1;
-            height: calc(100vh - 73px);
-        }
-
-        /* --- SECTION 1: SIDEBAR --- */
-        .sidebar {
-            background: rgba(5, 8, 6, 0.4);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid var(--border);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            overflow: hidden;
-        }
-
-        .action-btn {
-            background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald));
-            color: #050806;
-            border: none;
-            padding: 0.9rem;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 4px 15px var(--accent-green-glow);
-            transition: var(--transition-smooth);
-            flex-shrink: 0;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 255, 102, 0.5);
-            filter: brightness(1.1);
-        }
-
-        .list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .snippet-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border);
-            padding: 1.2rem;
-            border-radius: 14px;
-            cursor: pointer;
+            height: calc(100dvh - 75px);
             position: relative;
-            overflow: hidden;
-            transition: var(--transition-smooth);
-            animation: fadeInSlide 0.4s ease-out forwards;
+            transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .snippet-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background: var(--accent-green);
-            transform: scaleY(0);
-            transition: var(--transition-smooth);
-        }
+        .sidebar { background: rgba(5, 8, 6, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-right: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; overflow: hidden; }
+        .sidebar-controls { display: flex; gap: 10px; flex-shrink: 0; }
+        .action-btn { background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald)); color: #050806; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--accent-green-glow); transition: var(--transition-smooth); flex: 1; min-height: 44px; }
+        .action-btn:active { transform: scale(0.96); }
 
-        .snippet-card:hover {
-            background: rgba(0, 255, 102, 0.03);
-            border-color: rgba(0, 255, 102, 0.2);
-            transform: translateX(5px);
-        }
-
-        .snippet-card.active {
-            border-color: rgba(0, 255, 102, 0.3);
-            background: rgba(0, 255, 102, 0.05);
-        }
-
+        .list-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; padding-bottom: 2rem; }
+        .snippet-card { background: var(--panel-bg); border: 1px solid var(--border); padding: 1.2rem; border-radius: 14px; cursor: pointer; position: relative; overflow: hidden; transition: var(--transition-smooth); }
+        .snippet-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent-green); transform: scaleY(0); transition: var(--transition-smooth); }
+        .snippet-card.active { border-color: rgba(0, 255, 102, 0.4); background: rgba(0, 255, 102, 0.05); }
         .snippet-card.active::before { transform: scaleY(1); }
-
-        .snippet-card h5 {
-            font-size: 0.95rem;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: color 0.3s;
-            color: var(--text-light);
-        }
+        .snippet-card h5 { font-size: 0.95rem; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-light); }
         .snippet-card.active h5 { color: var(--accent-green); }
+        .snippet-card p { font-size: 0.8rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .snippet-card p {
-            font-size: 0.8rem;
-            color: var(--text-gray);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+        .editor-zone { display: flex; flex-direction: column; border-right: 1px solid var(--border); background: rgba(5, 8, 6, 0.3); position: relative; }
+        .zone-header { padding: 1rem 1.2rem; background: var(--panel-bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-shrink: 0; }
+        .zone-header input { background: transparent; border: none; color: white; font-weight: 600; outline: none; font-size: 16px; width: 100%; border-bottom: 1px solid transparent; padding: 8px 0; }
+        .zone-header input:focus { border-bottom-color: var(--accent-green); }
+        .ctrl-btns { display: flex; gap: 8px; flex-shrink: 0; }
+        
+        .icon-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-gray); min-width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .icon-btn:active { transform: scale(0.92); background: rgba(0, 255, 102, 0.1); }
 
-        /* --- SECTION 2: EDITOR --- */
-        .editor-zone {
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border);
-            background: rgba(5, 8, 6, 0.2);
-        }
+        .code-area { flex: 1; background: transparent; border: none; resize: none; outline: none; padding: 1.5rem; color: #c9decb; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 16px; width: 100%; }
 
-        .zone-header {
-            padding: 1rem 1.5rem;
-            background: var(--panel-bg);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
+        .preview-zone { background: white; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        
+        .preview-header { 
+            background: rgba(10, 16, 16, 0.95); 
+            padding: 1rem 1.5rem; 
+            border-bottom: 1px solid var(--border); 
+            color: var(--text-gray); 
+            font-size: 0.8rem; 
+            font-weight: 700; 
+            letter-spacing: 1.5px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            transition: padding-top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .preview-header .status { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+        .preview-header span.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
 
-        .zone-header input {
-            background: transparent;
-            border: none;
-            color: white;
-            font-weight: 600;
-            outline: none;
-            font-size: 1.05rem;
-            width: 100%;
-            transition: var(--transition-smooth);
-            border-bottom: 1px solid transparent;
-        }
-        .zone-header input:focus {
-            border-bottom-color: var(--accent-green);
-        }
-
-        .ctrl-btns {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .icon-btn {
-            background: rgba(255,255,255,0.01);
-            border: 1px solid var(--border);
-            color: var(--text-gray);
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-smooth);
-        }
-
-        .icon-btn:hover {
-            color: var(--accent-green);
-            border-color: var(--accent-green);
-            transform: translateY(-2px) scale(1.05);
-            background: rgba(0, 255, 102, 0.04);
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.1);
-        }
-
-        .code-area {
-            flex: 1;
-            background: transparent;
-            border: none;
-            resize: none;
-            outline: none;
-            padding: 1.8rem;
-            color: #c9decb;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        /* --- SECTION 3: LIVE PREVIEW --- */
-        .preview-zone {
-            background: white;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        .preview-header {
-            background: rgba(10, 16, 16, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-gray);
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .preview-header .status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            white-space: nowrap;
-        }
-
-        .preview-header span.dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            box-shadow: 0 0 10px var(--accent-green);
-        }
-
-        .iframe-wrapper {
-            width: 100%;
-            flex: 1;
-            overflow: auto;
-            background: white;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            min-height: 100%;
-            border: none;
-            display: block;
-            background: white;
-            transition: opacity 0.2s ease;
-        }
-
-        /* ==========================================================================
-           RESPONSIVE MEDIA QUERIES (จัดระเบียบหน้าจอแยกตามอุปกรณ์)
-           ========================================================================== */
-
-        @media (max-width: 1200px) and (min-width: 901px) {
-            .main-layout { grid-template-columns: 240px 1fr 1fr; }
-            .zone-header, .preview-header { padding: 1rem; }
-            .code-area { padding: 1.2rem; }
-        }
+        .iframe-wrapper { width: 100%; flex: 1; overflow: auto; background: white; -webkit-overflow-scrolling: touch; }
+        iframe { width: 100%; height: 100%; border: none; display: block; background: white; }
 
         @media (max-width: 900px) {
-            nav { padding: 0.8rem 1rem; gap: 10px; }
-            .brand { font-size: 1.1rem; }
-            .view-switcher { display: flex; width: auto; max-width: 50%; }
-            .switch-btn { padding: 6px 12px; font-size: 0.78rem; }
-            .main-layout { grid-template-columns: 1fr; position: relative; height: calc(100vh - 59px); }
+            nav { padding: 0.8rem; flex-wrap: wrap; gap: 10px; }
+            .brand { width: 100%; justify-content: center; padding-bottom: 5px; }
+            .mode-switcher { flex: 1; justify-content: center; }
+            .mode-btn { flex: 1; justify-content: center; }
+            .view-switcher { display: flex; flex: 1; }
+            .switch-btn { flex: 1; text-align: center; }
+            
+            .main-layout { grid-template-columns: 1fr; position: relative; height: calc(100dvh - 125px); }
 
             .sidebar, .editor-zone, .preview-zone {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                opacity: 0;
-                transform: translateX(20px);
-                pointer-events: none;
-                transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+                position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+                opacity: 0; transform: translateX(10%); pointer-events: none;
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+                background: var(--bg-dark); z-index: 1;
             }
 
             .main-layout.show-list .sidebar,
             .main-layout.show-editor .editor-zone,
             .main-layout.show-preview .preview-zone {
-                opacity: 1;
-                transform: translateX(0);
-                pointer-events: auto;
-                z-index: 5;
+                opacity: 1; transform: translateX(0); pointer-events: auto; z-index: 5;
             }
-            
-            .main-layout.show-list .editor-zone, .main-layout.show-list .preview-zone { transform: translateX(-20px); }
-            .main-layout.show-editor .preview-zone { transform: translateX(-20px); }
-        }
-
-        @media (max-width: 580px) {
-            nav { flex-direction: column; align-items: center; gap: 12px; padding: 0.8rem; }
-            .brand { font-size: 1.1rem; text-align: center; }
-            .mode-switcher { width: 100%; justify-content: center; }
-            .mode-btn { flex: 1; justify-content: center; }
-            .view-switcher { max-width: 100%; width: 100%; }
-            .switch-btn { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
-            .main-layout { height: calc(100vh - 138px); }
-            .zone-header { padding: 0.8rem; }
-            .ctrl-btns .icon-btn { width: 34px; height: 34px; }
-            .code-area { padding: 1rem; font-size: 0.95rem; }
+            .main-layout.show-list .editor-zone, .main-layout.show-list .preview-zone { transform: translateX(-10%); }
+            .main-layout.show-editor .preview-zone { transform: translateX(-10%); }
         }
     </style>
 </head>
@@ -465,55 +203,60 @@
 
     <!-- NAV BAR -->
     <nav>
-        <div class="brand"><i class="fa-solid fa-layer-group"></i> NEO<span>VAULT DUAL</span></div>
+        <div class="brand"><i class="fa-solid fa-layer-group"></i> NEO<span>VAULT</span></div>
         
-        <!-- แถบสลับโหมดการทำงานระหว่างคลังเก็บ Code และคลังเก็บ Prompt -->
         <div class="mode-switcher">
             <button class="mode-btn active" id="mode-code" onclick="switchSystemMode('code')"><i class="fa-solid fa-code"></i> CODE</button>
             <button class="mode-btn" id="mode-prompt" onclick="switchSystemMode('prompt')"><i class="fa-solid fa-brain"></i> PROMPT</button>
         </div>
 
-        <!-- Mobile Switcher Tabs -->
         <div class="view-switcher">
-            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')">Vault</button>
-            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')">Editor</button>
-            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')">Preview</button>
+            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')"><i class="fa-solid fa-list"></i> Vault</button>
+            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')"><i class="fa-solid fa-pen-to-square"></i> Editor</button>
+            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')"><i class="fa-solid fa-play"></i> View</button>
         </div>
     </nav>
 
     <!-- MAIN INTERFACE -->
     <div class="main-layout show-list" id="mainLayout">
         
-        <!-- 1. SIDEBAR -->
         <aside class="sidebar">
-            <button class="action-btn" id="actionBtn" onclick="addNewCode()"><i class="fa-solid fa-plus"></i> New Snippet</button>
-            <div class="list-container" id="listContainer">
-                <!-- Injected via JavaScript -->
+            <div class="sidebar-controls">
+                <button class="action-btn" id="actionBtn" onclick="addNewItem()"><i class="fa-solid fa-plus"></i> New</button>
+                <button class="icon-btn" onclick="exportData()" title="Backup Data"><i class="fa-solid fa-file-export"></i></button>
+                <button class="icon-btn" onclick="document.getElementById('importFile').click()" title="Restore Data"><i class="fa-solid fa-file-import"></i></button>
+                <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
             </div>
+            <div class="list-container" id="listContainer"></div>
         </aside>
 
-        <!-- 2. EDITOR -->
         <section class="editor-zone">
             <div class="zone-header">
                 <input type="text" id="titleInput" value="Untitled" oninput="saveCurrentData()">
                 <div class="ctrl-btns">
-                    <button class="icon-btn" id="templateBtn" title="Insert Template" onclick="insertTemplate()"><i class="fa-solid fa-code"></i></button>
-                    <button class="icon-btn" id="copyBtn" title="Copy Code" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
-                    <button class="icon-btn" id="downloadBtn" title="Download File" onclick="downloadCode()"><i class="fa-solid fa-download"></i></button>
-                    <button class="icon-btn" title="Delete Item" onclick="deleteCurrentCode()" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" id="templateBtn" onclick="insertTemplate()"><i class="fa-solid fa-code"></i></button>
+                    <button class="icon-btn" id="copyBtn" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
+                    <button class="icon-btn" onclick="deleteCurrentItem()" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
             <textarea class="code-area" id="editor" placeholder="Write here..." oninput="liveRender()"></textarea>
         </section>
 
-        <!-- 3. LIVE PREVIEW -->
+        <!-- 3. LIVE PREVIEW ZONE -->
         <section class="preview-zone">
             <div class="preview-header">
-                <div class="status" id="previewStatus"><span class="dot"></span> LIVE INTERACTIVE OUTPUT</div>
-                <div id="saveStatus" style="font-size: 0.75rem; color: #00ff66; font-weight: 500;">Saved Local</div>
+                <div class="status" id="previewStatus"><span class="dot"></span> LIVE OUTPUT</div>
+                
+                <!-- ชุดสถานะ & ปุ่มขยายเต็มจอ -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="saveStatus" style="font-size: 0.75rem; color: #00ff66; font-weight: 600;">Saved</div>
+                    <button class="icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()" style="min-width: 38px; height: 38px; border-radius: 8px;">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
             </div>
             <div class="iframe-wrapper">
-                <iframe id="outputFrame"></iframe>
+                <iframe id="outputFrame" sandbox="allow-scripts allow-same-origin"></iframe>
             </div>
         </section>
 
@@ -521,49 +264,31 @@
 
     <!-- LOGIC ENGINE -->
     <script>
-        // โครงสร้างชุดข้อมูลจำลองสำหรับทั้งโหมดเขียนโค้ดเว็บ และโหมดเก็บ Prompt
         const defaultCodeData = [
-            { id: 101, title: "Modern Welcome Page", code: "<div style='padding: 40px; text-align: center; font-family: system-ui, sans-serif;'>\n  <h1 style='color: #00b34a; font-size: 36px; margin-bottom: 10px;'>⚡ Code Vault Ready</h1>\n  <p style='color: #444; font-size: 16px; max-width: 400px; margin: 0 auto 30px;'>Type anything in the editor panel and see it update instantly here.</p>\n  <div style='height: 200px; background: #f0f3f1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #888;'>[ Persistent LocalStorage Enabled ]</div>\n</div>" },
-            { id: 102, title: "Cyber Glow Button", code: "<button style='background: linear-gradient(135deg, #00ff66, #00b34a); border: none; color: #000; padding: 16px 36px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: block; margin: 60px auto; box-shadow: 0 10px 25px rgba(0,255,102,0.3); transition: 0.3s; font-family: sans-serif;'>INITIALIZE CORE</button>" }
+            { id: 101, title: "iOS Safe Gradient", code: "<div style='min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #0f2027, #203a43, #2c5364); font-family:sans-serif; color:white; text-align:center; padding:20px;'>\n  <div>\n    <h1 style='color:#00ff66;'>System Ready</h1>\n    <p>Safe layout designed for modern mobile displays.</p>\n  </div>\n</div>" }
         ];
 
         const defaultPromptData = [
-            { id: 201, title: "🤖 Copywriter ขั้นเทพ", code: "คุณคือผู้เชี่ยวชาญด้าน Copywriting และการตลาดออนไลน์ที่มีประสบการณ์มากกว่า 10 ปี\n\nจงเขียนคำโฆษณาขายสินค้าชิ้นนี้ โดยมีเงื่อนไขดังนี้:\n1. ดึงดูดความสนใจใน 3 บรรทัดแรก (Hook)\n2. เจาะกลุ่มเป้าหมายวัยทำงานที่มีปัญหาเรื่องเวลา\n3. จบด้วย Call to Action (CTA) ที่ทรงพลัง\n\n[ใส่รายละเอียดสินค้าของคุณที่นี่]" },
-            { id: 202, title: "📝 ผู้ช่วยสรุปบทความยาว", code: "จงสรุปบทความต่อไปนี้ให้เข้าใจง่ายภายใน 5 บรรทัด\n\nกติกาการสรุป:\n- เน้นประเด็นสำคัญและตัวเลขสถิติ (ถ้ามี)\n- ใช้ภาษากระชับ เป็นทางการแต่เข้าใจง่าย\n- แบ่งหัวข้อเป็นข้อๆ (Bullet Points)\n\n[วางบทความที่ต้องการสรุปที่นี่]" }
+            { id: 201, title: "iOS App Idea Validator", code: "คุณคือ Product Manager ระดับ Senior ของ Apple\n\nจงวิเคราะห์ไอเดียแอปพลิเคชันต่อไปนี้:\n1. ความเป็นไปได้ทางเทคนิค (iOS APIs)\n2. กลุ่มเป้าหมาย\n3. วิธีหาเงิน (Monetization)\n\n[ใส่ไอเดียแอปของคุณที่นี่]" }
         ];
 
-        // ตัวแปรควบคุมสถานะระบบการทำงานหลัก
-        let currentMode = 'code'; // โหมดปัจจุบัน: 'code' หรือ 'prompt'
+        let currentMode = 'code';
         let storage = [];
         let activeId = null;
+        let isFullscreen = false; // สถานะ Fullscreen
 
-        // ฟังก์ชันโหลดฐานข้อมูลตามโหมดที่เลือกโดยแยกคีย์กันชัดเจนใน LocalStorage
         function initSystemMode() {
-            if (currentMode === 'code') {
-                storage = JSON.parse(localStorage.getItem('neo_vault_db_code')) || defaultCodeData;
-                activeId = storage.length > 0 ? storage[0].id : 101;
-                
-                // อัปเดต UI ให้สอดคล้องกับธีมการจัดเก็บเว็บและโค้ด
-                document.getElementById('actionBtn').innerHTML = `<i class="fa-solid fa-plus"></i> New Snippet`;
-                document.getElementById('editor').placeholder = "Write HTML, CSS or JS here... Output updates instantly.";
-                document.getElementById('editor').style.fontFamily = "'Fira Code', monospace";
-                document.getElementById('previewStatus').innerHTML = `<span class="dot"></span> LIVE INTERACTIVE OUTPUT`;
-                document.getElementById('templateBtn').innerHTML = `<i class="fa-solid fa-code"></i>`;
-                document.getElementById('templateBtn').title = "Insert HTML5 Template";
-            } else {
-                storage = JSON.parse(localStorage.getItem('neo_vault_db_prompt')) || defaultPromptData;
-                activeId = storage.length > 0 ? storage[0].id : 201;
-                
-                // อัปเดต UI ให้สอดคล้องกับธีมระบบการจัดการ AI Prompt
-                document.getElementById('actionBtn').innerHTML = `<i class="fa-solid fa-plus"></i> New Prompt`;
-                document.getElementById('editor').placeholder = "พิมพ์หรือวาง Prompt ของคุณที่นี่... ระบบจะพรีวิวให้อ่านง่ายอัตโนมัติ";
-                document.getElementById('editor').style.fontFamily = "'Plus Jakarta Sans', sans-serif";
-                document.getElementById('previewStatus').innerHTML = `<span class="dot"></span> PROMPT PREVIEW MONITOR`;
-                document.getElementById('templateBtn').innerHTML = `<i class="fa-solid fa-file-invoice"></i>`;
-                document.getElementById('templateBtn').title = "Insert Prompt Template";
-            }
+            const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
+            storage = JSON.parse(localStorage.getItem(key)) || (currentMode === 'code' ? defaultCodeData : defaultPromptData);
+            activeId = storage.length > 0 ? storage[0].id : Date.now();
+            
+            document.getElementById('actionBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-plus"></i> New Code` : `<i class="fa-solid fa-plus"></i> New Prompt`;
+            document.getElementById('editor').style.fontFamily = currentMode === 'code' ? "'Fira Code', monospace" : "'Plus Jakarta Sans', sans-serif";
+            document.getElementById('previewStatus').innerHTML = currentMode === 'code' ? `<span class="dot"></span> WEB PREVIEW` : `<span class="dot"></span> PROMPT VIEW`;
+            document.getElementById('templateBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-laptop-code"></i>` : `<i class="fa-solid fa-file-invoice"></i>`;
+            
             renderSidebar();
-            selectCode(activeId);
+            selectItem(activeId);
         }
 
         function switchSystemMode(mode) {
@@ -574,11 +299,12 @@
         }
 
         function updateLocalStorage() {
-            const keyName = currentMode === 'code' ? 'neo_vault_db_code' : 'neo_vault_db_prompt';
-            localStorage.setItem(keyName, JSON.stringify(storage));
+            const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
+            localStorage.setItem(key, JSON.stringify(storage));
             const statusNode = document.getElementById('saveStatus');
             statusNode.innerText = "Saving...";
-            setTimeout(() => { statusNode.innerText = "Saved Local"; }, 400);
+            statusNode.style.color = "#fff";
+            setTimeout(() => { statusNode.innerText = "Saved"; statusNode.style.color = "#00ff66"; }, 400);
         }
 
         function renderSidebar() {
@@ -587,72 +313,45 @@
             storage.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = `snippet-card ${item.id === activeId ? 'active' : ''}`;
-                card.style.animationDelay = `${index * 0.05}s`;
-                card.onclick = () => selectCode(item.id);
-                
-                const cleanPreview = (item.code || "").replace(/</g, "&lt;").substring(0, 35);
-
-                card.innerHTML = `
-                    <h5>${item.title || 'Untitled'}</h5>
-                    <p>${cleanPreview || 'Empty content...'}</p>
-                `;
+                card.onclick = () => selectItem(item.id);
+                const cleanPreview = (item.code || "").replace(/</g, "&lt;").substring(0, 40);
+                card.innerHTML = `<h5>${item.title || 'Untitled'}</h5><p>${cleanPreview || '...'}</p>`;
                 container.appendChild(card);
             });
         }
 
-        function selectCode(id) {
+        function selectItem(id) {
             activeId = id;
             const current = storage.find(item => item.id === id);
             if(current) {
                 document.getElementById('titleInput').value = current.title;
                 document.getElementById('editor').value = current.code;
-                
-                const iframe = document.getElementById('outputFrame');
-                iframe.style.opacity = 0;
-                setTimeout(() => {
-                    liveRender(false);
-                    iframe.style.opacity = 1;
-                }, 150);
-                
+                liveRender(false);
                 renderSidebar();
             }
-            if(window.innerWidth <= 900) {
-                switchMobileView('editor');
-            }
+            if(window.innerWidth <= 900) switchMobileView('editor');
         }
 
         function liveRender(shouldSave = true) {
             const code = document.getElementById('editor').value;
             const iframe = document.getElementById('outputFrame');
-            const documentDoc = iframe.contentDocument || iframe.contentWindow.document;
-            
-            documentDoc.open();
             
             if (currentMode === 'code') {
-                // สำหรับโหมด Code: ทำการรันโครงสร้างคำสั่งเป็นเว็บเพจ HTML ตรงๆ
-                documentDoc.write(code);
+                iframe.srcdoc = code;
             } else {
-                // สำหรับโหมด Prompt: จัดการห่อหุ้มโครงสร้าง Plain Text ให้ออกมาเป็นหน้าพรีวิวที่อ่านและนำไปใช้ง่าย
                 const htmlPromptView = `
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                    <style>
-                        body { background: #090d16; color: #e2e8f0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; padding: 24px; margin: 0; line-height: 1.6; }
-                        .prompt-box { border: 1px solid rgba(0, 255, 102, 0.15); padding: 24px; background: rgba(10, 16, 16, 0.7); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); font-size: 15px; white-space: pre-wrap; word-wrap: break-word; }
-                        .tag { display: inline-block; background: rgba(0, 255, 102, 0.1); color: #00ff66; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(0, 255, 102, 0.2); }
-                    </style>
-                    </head>
-                    <body>
-                        <div class="tag">Active Prompt View</div>
-                        <div class="prompt-box">${code ? code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<span style="color:#6b7a70">ไม่มีข้อความ...</span>'}</div>
-                    </body>
-                    </html>
+                    <!DOCTYPE html><html><head><style>
+                        body { background: #090d16; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; padding: 20px; margin: 0; line-height: 1.6; font-size: 16px; }
+                        .prompt-box { border: 1px solid rgba(0, 255, 102, 0.15); padding: 20px; background: rgba(10, 16, 16, 0.7); border-radius: 12px; white-space: pre-wrap; word-wrap: break-word; }
+                        .tag { display: inline-block; background: rgba(0, 255, 102, 0.1); color: #00ff66; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 15px; }
+                    </style></head><body>
+                        <div class="tag">PROMPT RENDER</div>
+                        <div class="prompt-box">${code ? code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<span style="color:#666">No content...</span>'}</div>
+                    </body></html>
                 `;
-                documentDoc.write(htmlPromptView);
+                iframe.srcdoc = htmlPromptView;
             }
             
-            documentDoc.close();
             if(shouldSave) saveCurrentData();
         }
 
@@ -661,89 +360,106 @@
             if(current) {
                 current.title = document.getElementById('titleInput').value;
                 current.code = document.getElementById('editor').value;
-                
-                const activeCardTitle = document.querySelector('.snippet-card.active h5');
-                const activeCardDesc = document.querySelector('.snippet-card.active p');
-                if(activeCardTitle) activeCardTitle.innerText = current.title;
-                if(activeCardDesc) activeCardDesc.innerText = current.code.replace(/</g, "&lt;").substring(0, 35);
-                
                 updateLocalStorage();
             }
         }
 
-        function addNewCode() {
+        function addNewItem() {
             const newId = Date.now();
             const newItem = currentMode === 'code' 
-                ? { id: newId, title: "New Web Project", code: "<!-- Write code here -->" }
-                : { id: newId, title: "💡 Prompt ใหม่", code: "เขียนรายละเอียดและบทบาทของคำสั่งที่นี่..." };
-                
+                ? { id: newId, title: "New Snippet", code: "<!-- HTML Here -->" }
+                : { id: newId, title: "New Prompt", code: "คำสั่งของคุณ..." };
             storage.unshift(newItem);
             activeId = newId;
             updateLocalStorage();
             renderSidebar();
-            selectCode(newId);
+            selectItem(newId);
         }
 
-        function deleteCurrentCode() {
-            if(storage.length <= 1) {
-                alert("ไม่สามารถลบรายการสุดท้ายในหมวดนี้ได้!");
-                return;
-            }
+        function deleteCurrentItem() {
+            if(storage.length <= 1) return alert("Cannot delete the last item.");
             storage = storage.filter(item => item.id !== activeId);
             activeId = storage[0].id;
             updateLocalStorage();
-            selectCode(activeId);
+            selectItem(activeId);
         }
 
         function insertTemplate() {
-            if (currentMode === 'code') {
-                const template = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { background: #0b0f19; color: #00ff66; text-align: center; padding-top: 60px; font-family: sans-serif; }\n  .box { border: 1px solid #00ff66; padding: 20px; max-width: 400px; margin: 20px auto; border-radius: 8px; box-shadow: 0 0 15px rgba(0,255,102,0.2); }\n</style>\n</head>\n<body>\n  <h1>HELLO WORLD</h1>\n  <div class="box">System is online and running.</div>\n</body>\n</html>`;
-                document.getElementById('editor').value = template;
-            } else {
-                const template = `[บทบาท]: คุณคือผู้เชี่ยวชาญด้าน [ระบุสายอาชีพ]\n\n[งานที่ต้องทำ]: ช่วยฉันวางแผน/เขียน/วิเคราะห์ [ระบุงาน]\n\n[บริบทและข้อมูล]:\n- ประเด็นที่ 1:\n- ประเด็นที่ 2:\n\n[ข้อจำกัด/รูปแบบผลลัพธ์]: ขอผลลัพธ์ในรูปแบบของตาราง/ข้อสั้นๆ และห้ามใช้คำฟุ่มเฟือย`;
-                document.getElementById('editor').value = template;
-            }
+            const template = currentMode === 'code' 
+                ? `<!DOCTYPE html>\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\n  body { font-family: -apple-system, sans-serif; padding: 20px; }\n  .btn { background: #007aff; color: white; padding: 12px 20px; border: none; border-radius: 8px; width: 100%; font-size: 16px; }\n</style>\n<body>\n  <h2>Native iOS Style</h2>\n  <button class="btn">Tap Me</button>\n</body>`
+                : `[Role]: ผู้เชี่ยวชาญด้าน ...\n[Task]: ช่วยอธิบาย ...\n[Tone]: เข้าใจง่าย`;
+            document.getElementById('editor').value = template;
             liveRender();
         }
 
         function copyToClipboard() {
             const code = document.getElementById('editor').value;
             navigator.clipboard.writeText(code);
-            const msg = currentMode === 'code' ? "Copied code to clipboard! 🚀" : "คัดลอก Prompt เรียบร้อย! ไปใช้วางบน ChatGPT / Claude ได้เลย 🧠";
-            alert(msg);
+            const btn = document.getElementById('copyBtn');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            btn.style.color = 'var(--accent-green)';
+            setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i>'; btn.style.color = ''; }, 1500);
         }
 
-        function downloadCode() {
-            const current = storage.find(item => item.id === activeId);
-            if(!current) return;
-            const extension = currentMode === 'code' ? 'html' : 'txt';
-            const mimeType = currentMode === 'code' ? 'text/html' : 'text/plain';
-            
-            const blob = new Blob([current.code], { type: mimeType });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${current.title.toLowerCase().replace(/\s+/g, '_')}.${extension}`;
-            link.click();
+        function exportData() {
+            const dataStr = JSON.stringify(storage, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `NeoVault_Backup_${currentMode}_${new Date().getTime()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(Array.isArray(imported) && imported.length > 0) {
+                        storage = imported; updateLocalStorage(); renderSidebar(); selectItem(storage[0].id);
+                        alert("Data restored successfully.");
+                    }
+                } catch (err) { alert("Error reading backup file."); }
+                event.target.value = ''; 
+            };
+            reader.readAsText(file);
         }
 
         function switchMobileView(viewName) {
             const layout = document.getElementById('mainLayout');
             layout.className = 'main-layout';
-            
-            if(viewName === 'list') layout.classList.add('show-list');
-            if(viewName === 'editor') layout.classList.add('show-editor');
-            if(viewName === 'preview') layout.classList.add('show-preview');
+            layout.classList.add(`show-${viewName}`);
 
             document.querySelectorAll('.switch-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${viewName}`).classList.add('active');
         }
 
-        window.onload = () => {
-            if(window.innerWidth > 900) {
-                const layout = document.getElementById('mainLayout');
-                layout.className = 'main-layout show-list';
+        // 🟢 ฟังก์ชันควบคุมระบบ Fullscreen 🟢
+        function toggleFullscreen() {
+            isFullscreen = !isFullscreen;
+            const btn = document.getElementById('fullscreenBtn');
+            
+            if(isFullscreen) {
+                document.body.classList.add('fullscreen-mode');
+                btn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                btn.style.color = 'var(--accent-green)';
+                btn.style.borderColor = 'var(--accent-green)';
+                btn.style.background = 'rgba(0, 255, 102, 0.1)';
+            } else {
+                document.body.classList.remove('fullscreen-mode');
+                btn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                btn.style.color = 'var(--text-gray)';
+                btn.style.borderColor = 'var(--border)';
+                btn.style.background = 'rgba(255,255,255,0.02)';
             }
-            // เริ่มต้นเปิดใช้งานแอปพลิเคชันจากฐานข้อมูล
+        }
+
+        window.onload = () => {
+            if(window.innerWidth > 900) { document.getElementById('mainLayout').className = 'main-layout show-list'; }
             initSystemMode();
         };
     </script>
