@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEO_VAULT V2 // Cyber Green Edition</title>
+    <title>NEO_VAULT V2 // Dual Mode (Code & Prompt)</title>
     
     <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
@@ -82,6 +82,7 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
             z-index: 10;
+            gap: 15px;
         }
 
         .brand {
@@ -93,6 +94,7 @@
             align-items: center;
             gap: 12px;
             transition: var(--transition-smooth);
+            flex-shrink: 0;
         }
         .brand:hover {
             transform: scale(1.03);
@@ -105,6 +107,35 @@
         }
         .brand span { color: var(--accent-emerald); }
 
+        /* ระบบปุ่มสลับหมวดหมู่ตัวเลือกงานหลัก (Code / Prompt) */
+        .mode-switcher {
+            display: flex;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            gap: 4px;
+        }
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mode-btn.active {
+            color: var(--accent-green);
+            background: rgba(0, 255, 102, 0.08);
+            border: 1px solid rgba(0, 255, 102, 0.2);
+        }
+
         /* --- MOBILE VIEW SWITCHER --- */
         .view-switcher {
             display: none;
@@ -112,6 +143,7 @@
             padding: 4px;
             border-radius: 12px;
             border: 1px solid var(--border);
+            gap: 2px;
         }
 
         .switch-btn {
@@ -124,6 +156,7 @@
             font-weight: 600;
             font-size: 0.85rem;
             transition: var(--transition-smooth);
+            white-space: nowrap;
         }
 
         .switch-btn.active {
@@ -150,6 +183,7 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            overflow: hidden;
         }
 
         .action-btn {
@@ -166,6 +200,7 @@
             gap: 8px;
             box-shadow: 0 4px 15px var(--accent-green-glow);
             transition: var(--transition-smooth);
+            flex-shrink: 0;
         }
 
         .action-btn:hover {
@@ -226,12 +261,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
             transition: color 0.3s;
+            color: var(--text-light);
         }
         .snippet-card.active h5 { color: var(--accent-green); }
 
         .snippet-card p {
             font-size: 0.8rem;
             color: var(--text-gray);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* --- SECTION 2: EDITOR --- */
@@ -250,6 +289,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
 
         .zone-header input {
@@ -259,7 +299,7 @@
             font-weight: 600;
             outline: none;
             font-size: 1.05rem;
-            width: 60%;
+            width: 100%;
             transition: var(--transition-smooth);
             border-bottom: 1px solid transparent;
         }
@@ -269,7 +309,8 @@
 
         .ctrl-btns {
             display: flex;
-            gap: 10px;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
         .icon-btn {
@@ -307,13 +348,13 @@
             line-height: 1.7;
         }
 
-        /* --- SECTION 3: LIVE PREVIEW (FIXED SCROLLING) --- */
+        /* --- SECTION 3: LIVE PREVIEW --- */
         .preview-zone {
             background: white;
             display: flex;
             flex-direction: column;
             height: 100%;
-            overflow: hidden; /* บังคับให้คุมผ่าน Container ด้านใน */
+            overflow: hidden;
         }
 
         .preview-header {
@@ -327,10 +368,18 @@
             letter-spacing: 1.5px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 10px;
         }
 
-        .preview-header span {
+        .preview-header .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .preview-header span.dot {
             width: 9px;
             height: 9px;
             border-radius: 50%;
@@ -338,29 +387,40 @@
             box-shadow: 0 0 10px var(--accent-green);
         }
 
-        /* แก้ไขตรงนี้: เปิดให้ผลลัพธ์สามารถสกรอลล์ได้อย่างเสรีเมื่อเนื้อหาล้นหน้าต่าง */
         .iframe-wrapper {
             width: 100%;
             flex: 1;
-            overflow: auto; /* เปิดใช้งาน scrollbar */
+            overflow: auto;
             background: white;
-            -webkit-overflow-scrolling: touch; /* เพิ่มความสมูทในการใช้นิ้วถูบนหน้าจอมือถือ */
+            -webkit-overflow-scrolling: touch;
         }
 
         iframe {
             width: 100%;
             height: 100%;
-            min-height: 100%; /* การันตีการดันพื้นที่ */
+            min-height: 100%;
             border: none;
             display: block;
             background: white;
             transition: opacity 0.2s ease;
         }
 
-        /* --- RESPONSIVE ANIMATIONS (MOBILE) --- */
+        /* ==========================================================================
+           RESPONSIVE MEDIA QUERIES (จัดระเบียบหน้าจอแยกตามอุปกรณ์)
+           ========================================================================== */
+
+        @media (max-width: 1200px) and (min-width: 901px) {
+            .main-layout { grid-template-columns: 240px 1fr 1fr; }
+            .zone-header, .preview-header { padding: 1rem; }
+            .code-area { padding: 1.2rem; }
+        }
+
         @media (max-width: 900px) {
-            .view-switcher { display: flex; }
-            .main-layout { grid-template-columns: 1fr; position: relative; }
+            nav { padding: 0.8rem 1rem; gap: 10px; }
+            .brand { font-size: 1.1rem; }
+            .view-switcher { display: flex; width: auto; max-width: 50%; }
+            .switch-btn { padding: 6px 12px; font-size: 0.78rem; }
+            .main-layout { grid-template-columns: 1fr; position: relative; height: calc(100vh - 59px); }
 
             .sidebar, .editor-zone, .preview-zone {
                 position: absolute;
@@ -369,9 +429,9 @@
                 top: 0;
                 left: 0;
                 opacity: 0;
-                transform: translateX(30px);
+                transform: translateX(20px);
                 pointer-events: none;
-                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+                transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
             }
 
             .main-layout.show-list .sidebar,
@@ -383,8 +443,21 @@
                 z-index: 5;
             }
             
-            .main-layout.show-list .editor-zone, .main-layout.show-list .preview-zone { transform: translateX(-30px); }
-            .main-layout.show-editor .preview-zone { transform: translateX(-30px); }
+            .main-layout.show-list .editor-zone, .main-layout.show-list .preview-zone { transform: translateX(-20px); }
+            .main-layout.show-editor .preview-zone { transform: translateX(-20px); }
+        }
+
+        @media (max-width: 580px) {
+            nav { flex-direction: column; align-items: center; gap: 12px; padding: 0.8rem; }
+            .brand { font-size: 1.1rem; text-align: center; }
+            .mode-switcher { width: 100%; justify-content: center; }
+            .mode-btn { flex: 1; justify-content: center; }
+            .view-switcher { max-width: 100%; width: 100%; }
+            .switch-btn { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.8rem; }
+            .main-layout { height: calc(100vh - 138px); }
+            .zone-header { padding: 0.8rem; }
+            .ctrl-btns .icon-btn { width: 34px; height: 34px; }
+            .code-area { padding: 1rem; font-size: 0.95rem; }
         }
     </style>
 </head>
@@ -392,8 +465,14 @@
 
     <!-- NAV BAR -->
     <nav>
-        <div class="brand"><i class="fa-solid fa-terminal"></i> NEO<span>VAULT</span></div>
+        <div class="brand"><i class="fa-solid fa-layer-group"></i> NEO<span>VAULT DUAL</span></div>
         
+        <!-- แถบสลับโหมดการทำงานระหว่างคลังเก็บ Code และคลังเก็บ Prompt -->
+        <div class="mode-switcher">
+            <button class="mode-btn active" id="mode-code" onclick="switchSystemMode('code')"><i class="fa-solid fa-code"></i> CODE</button>
+            <button class="mode-btn" id="mode-prompt" onclick="switchSystemMode('prompt')"><i class="fa-solid fa-brain"></i> PROMPT</button>
+        </div>
+
         <!-- Mobile Switcher Tabs -->
         <div class="view-switcher">
             <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')">Vault</button>
@@ -407,7 +486,7 @@
         
         <!-- 1. SIDEBAR -->
         <aside class="sidebar">
-            <button class="action-btn" onclick="addNewCode()"><i class="fa-solid fa-plus"></i> New Snippet</button>
+            <button class="action-btn" id="actionBtn" onclick="addNewCode()"><i class="fa-solid fa-plus"></i> New Snippet</button>
             <div class="list-container" id="listContainer">
                 <!-- Injected via JavaScript -->
             </div>
@@ -418,20 +497,21 @@
             <div class="zone-header">
                 <input type="text" id="titleInput" value="Untitled" oninput="saveCurrentData()">
                 <div class="ctrl-btns">
-                    <button class="icon-btn" title="Insert HTML5 Boilerplate" onclick="insertTemplate()"><i class="fa-solid fa-code"></i></button>
-                    <button class="icon-btn" title="Copy Code" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
-                    <button class="icon-btn" title="Delete Snippet" onclick="deleteCurrentCode()" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn" id="templateBtn" title="Insert Template" onclick="insertTemplate()"><i class="fa-solid fa-code"></i></button>
+                    <button class="icon-btn" id="copyBtn" title="Copy Code" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
+                    <button class="icon-btn" id="downloadBtn" title="Download File" onclick="downloadCode()"><i class="fa-solid fa-download"></i></button>
+                    <button class="icon-btn" title="Delete Item" onclick="deleteCurrentCode()" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
-            <textarea class="code-area" id="editor" placeholder="Write HTML, CSS or JS here... Output updates instantly." oninput="liveRender()"></textarea>
+            <textarea class="code-area" id="editor" placeholder="Write here..." oninput="liveRender()"></textarea>
         </section>
 
-        <!-- 3. LIVE PREVIEW (WITH SCROLL FIX) -->
+        <!-- 3. LIVE PREVIEW -->
         <section class="preview-zone">
             <div class="preview-header">
-                <span></span> LIVE INTERACTIVE OUTPUT
+                <div class="status" id="previewStatus"><span class="dot"></span> LIVE INTERACTIVE OUTPUT</div>
+                <div id="saveStatus" style="font-size: 0.75rem; color: #00ff66; font-weight: 500;">Saved Local</div>
             </div>
-            <!-- Wrapper ที่เปิดให้ Scrollable ได้ -->
             <div class="iframe-wrapper">
                 <iframe id="outputFrame"></iframe>
             </div>
@@ -441,13 +521,65 @@
 
     <!-- LOGIC ENGINE -->
     <script>
-        // Default English Mock Data
-        let storage = [
-            { id: 1, title: "Modern Welcome Page", code: "<div style='padding: 40px; text-align: center; font-family: system-ui, sans-serif;'>\n  <h1 style='color: #00b34a; font-size: 36px; margin-bottom: 10px;'>⚡ Code Vault Ready</h1>\n  <p style='color: #444; font-size: 16px; max-width: 400px; margin: 0 auto 30px;'>Type anything in the editor panel and see it update instantly here.</p>\n  <div style='height: 500px; background: #f0f3f1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #888;'>[ Large Element To Test Scrollability ]</div>\n</div>" },
-            { id: 2, title: "Cyber Glow Button", code: "<button style='background: linear-gradient(135deg, #00ff66, #00b34a); border: none; color: #000; padding: 16px 36px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: block; margin: 60px auto; box-shadow: 0 10px 25px rgba(0,255,102,0.3); transition: 0.3s; font-family: sans-serif;'>INITIALIZE CORE</button>" }
+        // โครงสร้างชุดข้อมูลจำลองสำหรับทั้งโหมดเขียนโค้ดเว็บ และโหมดเก็บ Prompt
+        const defaultCodeData = [
+            { id: 101, title: "Modern Welcome Page", code: "<div style='padding: 40px; text-align: center; font-family: system-ui, sans-serif;'>\n  <h1 style='color: #00b34a; font-size: 36px; margin-bottom: 10px;'>⚡ Code Vault Ready</h1>\n  <p style='color: #444; font-size: 16px; max-width: 400px; margin: 0 auto 30px;'>Type anything in the editor panel and see it update instantly here.</p>\n  <div style='height: 200px; background: #f0f3f1; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #888;'>[ Persistent LocalStorage Enabled ]</div>\n</div>" },
+            { id: 102, title: "Cyber Glow Button", code: "<button style='background: linear-gradient(135deg, #00ff66, #00b34a); border: none; color: #000; padding: 16px 36px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; display: block; margin: 60px auto; box-shadow: 0 10px 25px rgba(0,255,102,0.3); transition: 0.3s; font-family: sans-serif;'>INITIALIZE CORE</button>" }
         ];
 
-        let activeId = 1;
+        const defaultPromptData = [
+            { id: 201, title: "🤖 Copywriter ขั้นเทพ", code: "คุณคือผู้เชี่ยวชาญด้าน Copywriting และการตลาดออนไลน์ที่มีประสบการณ์มากกว่า 10 ปี\n\nจงเขียนคำโฆษณาขายสินค้าชิ้นนี้ โดยมีเงื่อนไขดังนี้:\n1. ดึงดูดความสนใจใน 3 บรรทัดแรก (Hook)\n2. เจาะกลุ่มเป้าหมายวัยทำงานที่มีปัญหาเรื่องเวลา\n3. จบด้วย Call to Action (CTA) ที่ทรงพลัง\n\n[ใส่รายละเอียดสินค้าของคุณที่นี่]" },
+            { id: 202, title: "📝 ผู้ช่วยสรุปบทความยาว", code: "จงสรุปบทความต่อไปนี้ให้เข้าใจง่ายภายใน 5 บรรทัด\n\nกติกาการสรุป:\n- เน้นประเด็นสำคัญและตัวเลขสถิติ (ถ้ามี)\n- ใช้ภาษากระชับ เป็นทางการแต่เข้าใจง่าย\n- แบ่งหัวข้อเป็นข้อๆ (Bullet Points)\n\n[วางบทความที่ต้องการสรุปที่นี่]" }
+        ];
+
+        // ตัวแปรควบคุมสถานะระบบการทำงานหลัก
+        let currentMode = 'code'; // โหมดปัจจุบัน: 'code' หรือ 'prompt'
+        let storage = [];
+        let activeId = null;
+
+        // ฟังก์ชันโหลดฐานข้อมูลตามโหมดที่เลือกโดยแยกคีย์กันชัดเจนใน LocalStorage
+        function initSystemMode() {
+            if (currentMode === 'code') {
+                storage = JSON.parse(localStorage.getItem('neo_vault_db_code')) || defaultCodeData;
+                activeId = storage.length > 0 ? storage[0].id : 101;
+                
+                // อัปเดต UI ให้สอดคล้องกับธีมการจัดเก็บเว็บและโค้ด
+                document.getElementById('actionBtn').innerHTML = `<i class="fa-solid fa-plus"></i> New Snippet`;
+                document.getElementById('editor').placeholder = "Write HTML, CSS or JS here... Output updates instantly.";
+                document.getElementById('editor').style.fontFamily = "'Fira Code', monospace";
+                document.getElementById('previewStatus').innerHTML = `<span class="dot"></span> LIVE INTERACTIVE OUTPUT`;
+                document.getElementById('templateBtn').innerHTML = `<i class="fa-solid fa-code"></i>`;
+                document.getElementById('templateBtn').title = "Insert HTML5 Template";
+            } else {
+                storage = JSON.parse(localStorage.getItem('neo_vault_db_prompt')) || defaultPromptData;
+                activeId = storage.length > 0 ? storage[0].id : 201;
+                
+                // อัปเดต UI ให้สอดคล้องกับธีมระบบการจัดการ AI Prompt
+                document.getElementById('actionBtn').innerHTML = `<i class="fa-solid fa-plus"></i> New Prompt`;
+                document.getElementById('editor').placeholder = "พิมพ์หรือวาง Prompt ของคุณที่นี่... ระบบจะพรีวิวให้อ่านง่ายอัตโนมัติ";
+                document.getElementById('editor').style.fontFamily = "'Plus Jakarta Sans', sans-serif";
+                document.getElementById('previewStatus').innerHTML = `<span class="dot"></span> PROMPT PREVIEW MONITOR`;
+                document.getElementById('templateBtn').innerHTML = `<i class="fa-solid fa-file-invoice"></i>`;
+                document.getElementById('templateBtn').title = "Insert Prompt Template";
+            }
+            renderSidebar();
+            selectCode(activeId);
+        }
+
+        function switchSystemMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            initSystemMode();
+        }
+
+        function updateLocalStorage() {
+            const keyName = currentMode === 'code' ? 'neo_vault_db_code' : 'neo_vault_db_prompt';
+            localStorage.setItem(keyName, JSON.stringify(storage));
+            const statusNode = document.getElementById('saveStatus');
+            statusNode.innerText = "Saving...";
+            setTimeout(() => { statusNode.innerText = "Saved Local"; }, 400);
+        }
 
         function renderSidebar() {
             const container = document.getElementById('listContainer');
@@ -457,9 +589,12 @@
                 card.className = `snippet-card ${item.id === activeId ? 'active' : ''}`;
                 card.style.animationDelay = `${index * 0.05}s`;
                 card.onclick = () => selectCode(item.id);
+                
+                const cleanPreview = (item.code || "").replace(/</g, "&lt;").substring(0, 35);
+
                 card.innerHTML = `
                     <h5>${item.title || 'Untitled'}</h5>
-                    <p>${item.code.substring(0, 35).replace(/</g, "&lt;")}...</p>
+                    <p>${cleanPreview || 'Empty content...'}</p>
                 `;
                 container.appendChild(card);
             });
@@ -475,7 +610,7 @@
                 const iframe = document.getElementById('outputFrame');
                 iframe.style.opacity = 0;
                 setTimeout(() => {
-                    liveRender();
+                    liveRender(false);
                     iframe.style.opacity = 1;
                 }, 150);
                 
@@ -486,16 +621,39 @@
             }
         }
 
-        function liveRender() {
+        function liveRender(shouldSave = true) {
             const code = document.getElementById('editor').value;
             const iframe = document.getElementById('outputFrame');
             const documentDoc = iframe.contentDocument || iframe.contentWindow.document;
             
             documentDoc.open();
-            documentDoc.write(code);
-            documentDoc.close();
             
-            saveCurrentData();
+            if (currentMode === 'code') {
+                // สำหรับโหมด Code: ทำการรันโครงสร้างคำสั่งเป็นเว็บเพจ HTML ตรงๆ
+                documentDoc.write(code);
+            } else {
+                // สำหรับโหมด Prompt: จัดการห่อหุ้มโครงสร้าง Plain Text ให้ออกมาเป็นหน้าพรีวิวที่อ่านและนำไปใช้ง่าย
+                const htmlPromptView = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                    <style>
+                        body { background: #090d16; color: #e2e8f0; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; padding: 24px; margin: 0; line-height: 1.6; }
+                        .prompt-box { border: 1px solid rgba(0, 255, 102, 0.15); padding: 24px; background: rgba(10, 16, 16, 0.7); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); font-size: 15px; white-space: pre-wrap; word-wrap: break-word; }
+                        .tag { display: inline-block; background: rgba(0, 255, 102, 0.1); color: #00ff66; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(0, 255, 102, 0.2); }
+                    </style>
+                    </head>
+                    <body>
+                        <div class="tag">Active Prompt View</div>
+                        <div class="prompt-box">${code ? code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<span style="color:#6b7a70">ไม่มีข้อความ...</span>'}</div>
+                    </body>
+                    </html>
+                `;
+                documentDoc.write(htmlPromptView);
+            }
+            
+            documentDoc.close();
+            if(shouldSave) saveCurrentData();
         }
 
         function saveCurrentData() {
@@ -504,37 +662,68 @@
                 current.title = document.getElementById('titleInput').value;
                 current.code = document.getElementById('editor').value;
                 
-                const activeCard = document.querySelector('.snippet-card.active h5');
-                if(activeCard) activeCard.innerText = current.title;
+                const activeCardTitle = document.querySelector('.snippet-card.active h5');
+                const activeCardDesc = document.querySelector('.snippet-card.active p');
+                if(activeCardTitle) activeCardTitle.innerText = current.title;
+                if(activeCardDesc) activeCardDesc.innerText = current.code.replace(/</g, "&lt;").substring(0, 35);
+                
+                updateLocalStorage();
             }
         }
 
         function addNewCode() {
             const newId = Date.now();
-            const newItem = { id: newId, title: "New Project", code: "<!-- Write code here -->" };
+            const newItem = currentMode === 'code' 
+                ? { id: newId, title: "New Web Project", code: "<!-- Write code here -->" }
+                : { id: newId, title: "💡 Prompt ใหม่", code: "เขียนรายละเอียดและบทบาทของคำสั่งที่นี่..." };
+                
             storage.unshift(newItem);
             activeId = newId;
+            updateLocalStorage();
             renderSidebar();
             selectCode(newId);
         }
 
         function deleteCurrentCode() {
-            if(storage.length <= 1) return;
+            if(storage.length <= 1) {
+                alert("ไม่สามารถลบรายการสุดท้ายในหมวดนี้ได้!");
+                return;
+            }
             storage = storage.filter(item => item.id !== activeId);
             activeId = storage[0].id;
+            updateLocalStorage();
             selectCode(activeId);
         }
 
         function insertTemplate() {
-            const template = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { background: #0b0f19; color: #00ff66; text-align: center; padding-top: 60px; font-family: sans-serif; }\n  .box { border: 1px solid #00ff66; padding: 20px; max-width: 400px; margin: 20px auto; border-radius: 8px; box-shadow: 0 0 15px rgba(0,255,102,0.2); }\n</style>\n</head>\n<body>\n  <h1>HELLO WORLD</h1>\n  <div class="box">System is online and running.</div>\n</body>\n</html>`;
-            document.getElementById('editor').value = template;
+            if (currentMode === 'code') {
+                const template = `<!DOCTYPE html>\n<html>\n<head>\n<style>\n  body { background: #0b0f19; color: #00ff66; text-align: center; padding-top: 60px; font-family: sans-serif; }\n  .box { border: 1px solid #00ff66; padding: 20px; max-width: 400px; margin: 20px auto; border-radius: 8px; box-shadow: 0 0 15px rgba(0,255,102,0.2); }\n</style>\n</head>\n<body>\n  <h1>HELLO WORLD</h1>\n  <div class="box">System is online and running.</div>\n</body>\n</html>`;
+                document.getElementById('editor').value = template;
+            } else {
+                const template = `[บทบาท]: คุณคือผู้เชี่ยวชาญด้าน [ระบุสายอาชีพ]\n\n[งานที่ต้องทำ]: ช่วยฉันวางแผน/เขียน/วิเคราะห์ [ระบุงาน]\n\n[บริบทและข้อมูล]:\n- ประเด็นที่ 1:\n- ประเด็นที่ 2:\n\n[ข้อจำกัด/รูปแบบผลลัพธ์]: ขอผลลัพธ์ในรูปแบบของตาราง/ข้อสั้นๆ และห้ามใช้คำฟุ่มเฟือย`;
+                document.getElementById('editor').value = template;
+            }
             liveRender();
         }
 
         function copyToClipboard() {
             const code = document.getElementById('editor').value;
             navigator.clipboard.writeText(code);
-            alert("Copied to clipboard! 🚀");
+            const msg = currentMode === 'code' ? "Copied code to clipboard! 🚀" : "คัดลอก Prompt เรียบร้อย! ไปใช้วางบน ChatGPT / Claude ได้เลย 🧠";
+            alert(msg);
+        }
+
+        function downloadCode() {
+            const current = storage.find(item => item.id === activeId);
+            if(!current) return;
+            const extension = currentMode === 'code' ? 'html' : 'txt';
+            const mimeType = currentMode === 'code' ? 'text/html' : 'text/plain';
+            
+            const blob = new Blob([current.code], { type: mimeType });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${current.title.toLowerCase().replace(/\s+/g, '_')}.${extension}`;
+            link.click();
         }
 
         function switchMobileView(viewName) {
@@ -554,7 +743,8 @@
                 const layout = document.getElementById('mainLayout');
                 layout.className = 'main-layout show-list';
             }
-            selectCode(activeId);
+            // เริ่มต้นเปิดใช้งานแอปพลิเคชันจากฐานข้อมูล
+            initSystemMode();
         };
     </script>
 </body>
