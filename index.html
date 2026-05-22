@@ -3,260 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="NEO_VAULT">
-    <meta name="theme-color" content="#06080c">
-
-    <title>NEO_VAULT V2.2 // Secure & Optimized</title>
+    <title>NEO_VAULT V3.0 // Spatial Edition</title>
     
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-dark: #06080c;
-            --panel-bg: rgba(10, 16, 16, 0.7);
-            --accent-green: #00ff66;
-            --accent-green-glow: rgba(0, 255, 102, 0.35);
-            --accent-emerald: #00b34a;
-            --text-light: #f0f5f2;
-            --text-gray: #6b7a70;
-            --border: rgba(0, 255, 102, 0.15);
+            /* Color Palette: Dark Mode + Neon Purple */
+            --bg-base: #05030a;
+            --accent-purple: #b026ff;
+            --accent-purple-glow: rgba(176, 38, 255, 0.4);
+            --accent-pink: #ff26b0;
+            --text-light: #f8f6fb;
+            --text-gray: #8a849b;
+            
+            /* Glassmorphism */
+            --glass-bg: rgba(20, 15, 30, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.15);
+            --glass-blur: blur(28px);
+            
             --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0; padding: 0; box-sizing: border-box;
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(0, 255, 102, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(0, 179, 74, 0.05) 0px, transparent 50%);
+            background-color: var(--bg-base);
             color: var(--text-light);
             height: 100dvh; 
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             overflow: hidden;
-            overscroll-behavior: none;
+            position: relative;
+        }
+
+        /* Ambient Background Lights */
+        .ambient-light {
+            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: -1; animation: float 15s infinite ease-in-out alternate;
+        }
+        .light-1 { width: 40vw; height: 40vw; background: var(--accent-purple); top: -10%; left: -10%; }
+        .light-2 { width: 35vw; height: 35vw; background: #3b00ff; bottom: -10%; right: -5%; animation-delay: -5s; }
+        .light-3 { width: 25vw; height: 25vw; background: var(--accent-pink); top: 40%; left: 40%; opacity: 0.3; animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 30px) scale(1.1); }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 255, 102, 0.2); border-radius: 10px; transition: var(--transition-smooth); }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-green); }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(176, 38, 255, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-purple); }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
-            50% { box-shadow: 0 0 18px rgba(0, 255, 102, 0.7); }
-            100% { box-shadow: 0 0 8px rgba(0, 255, 102, 0.4); }
-        }
-
-        /* --- NAVIGATION BAR --- */
+        /* --- FLOATING NAVIGATION --- */
         nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            background: rgba(6, 12, 9, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            margin: 15px 20px; padding: 12px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight); /* Specular Highlight */
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             z-index: 10;
-            gap: 15px;
-            padding-top: env(safe-area-inset-top, 1rem); 
             transition: var(--transition-smooth);
-            transform: translateY(0);
-            transform-origin: top;
         }
 
-        body.fullscreen-mode nav {
-            transform: translateY(-100%);
-            height: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
-            margin: 0 !important;
-            opacity: 0;
-            border-bottom: none;
-            pointer-events: none;
+        /* Typewriter Animation */
+        .brand { 
+            font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; 
+            display: flex; align-items: center; gap: 10px;
         }
-        body.fullscreen-mode .main-layout { height: 100dvh !important; }
-        body.fullscreen-mode .preview-header { padding-top: calc(env(safe-area-inset-top, 1rem) + 0.5rem); }
+        .brand i { color: var(--accent-purple); text-shadow: 0 0 15px var(--accent-purple); }
+        .typewriter-text {
+            display: inline-block;
+            overflow: hidden; white-space: nowrap;
+            border-right: 2px solid var(--accent-purple);
+            animation: typing 2s steps(20, end) forwards, blink 0.75s step-end infinite;
+            width: 0;
+        }
 
-        .brand { font-weight: 700; font-size: 1.2rem; letter-spacing: 1.2px; color: var(--text-light); display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .brand i { color: var(--accent-green); animation: pulseGlow 3s infinite; border-radius: 50%; }
-        .brand span { color: var(--accent-emerald); }
+        @keyframes typing { to { width: 108px; } } /* Adjusted to fit "NEO_VAULT" */
+        @keyframes blink { 50% { border-color: transparent; } }
 
-        .mode-switcher { display: flex; background: rgba(0, 0, 0, 0.4); padding: 4px; border-radius: 12px; border: 1px solid var(--border); gap: 4px; }
-        .mode-btn { background: transparent; border: none; color: var(--text-gray); padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: var(--transition-smooth); display: flex; align-items: center; gap: 8px; }
-        .mode-btn.active { color: var(--accent-green); background: rgba(0, 255, 102, 0.08); border: 1px solid rgba(0, 255, 102, 0.2); }
+        .mode-switcher { display: flex; background: rgba(0, 0, 0, 0.3); padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
+        .mode-btn { background: transparent; border: none; color: var(--text-gray); padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition-smooth); }
+        .mode-btn.active { color: #fff; background: rgba(176, 38, 255, 0.2); box-shadow: 0 0 15px rgba(176, 38, 255, 0.2); border: 1px solid rgba(176, 38, 255, 0.4); }
 
-        .view-switcher { display: none; background: rgba(255, 255, 255, 0.02); padding: 4px; border-radius: 12px; border: 1px solid var(--border); gap: 2px; margin-bottom: env(safe-area-inset-bottom, 0); }
-        .switch-btn { background: transparent; border: none; color: var(--text-gray); padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition-smooth); white-space: nowrap; }
-        .switch-btn.active { color: #000; background: var(--accent-green); box-shadow: 0 4px 15px var(--accent-green-glow); font-weight: 700; }
+        .view-switcher { display: none; }
 
+        /* --- FLOATING ARCHITECTURE (WIDGETS) --- */
         .main-layout {
             display: grid;
             grid-template-columns: 320px 1fr 1fr;
-            flex: 1;
-            height: calc(100dvh - 75px);
-            position: relative;
-            transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 20px; padding: 0 20px 20px 20px;
+            flex: 1; height: calc(100dvh - 90px);
         }
 
-        .sidebar { background: rgba(5, 8, 6, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-right: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem; overflow: hidden; }
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar { padding: 1.5rem; gap: 1.2rem; }
         .sidebar-controls { display: flex; gap: 10px; flex-shrink: 0; }
         
-        /* Search Box Styles */
         .search-container { position: relative; flex-shrink: 0; }
-        .search-container input { width: 100%; background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); color: var(--text-light); padding: 10px 15px 10px 38px; border-radius: 10px; outline: none; font-size: 0.9rem; transition: var(--transition-smooth); }
-        .search-container input:focus { border-color: var(--accent-green); background: rgba(0, 255, 102, 0.05); }
-        .search-container i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-gray); font-size: 0.9rem; }
+        .search-container input { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 10px 15px 10px 38px; border-radius: 12px; outline: none; transition: var(--transition-smooth); }
+        .search-container input:focus { border-color: var(--accent-purple); background: rgba(176, 38, 255, 0.05); box-shadow: 0 0 10px rgba(176, 38, 255, 0.1); }
+        .search-container i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
 
-        .action-btn { background: linear-gradient(135deg, var(--accent-green), var(--accent-emerald)); color: #050806; border: none; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--accent-green-glow); transition: var(--transition-smooth); flex: 1; min-height: 44px; }
-        .action-btn:active { transform: scale(0.96); }
+        .action-btn { background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white; border: none; padding: 12px; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--accent-purple-glow); transition: var(--transition-smooth); flex: 1; }
+        .action-btn:active { transform: scale(0.95); }
 
-        .list-container { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-right: 4px; padding-bottom: 2rem; }
-        .snippet-card { background: var(--panel-bg); border: 1px solid var(--border); padding: 1.2rem; border-radius: 14px; cursor: pointer; position: relative; overflow: hidden; transition: var(--transition-smooth); }
-        .snippet-card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--accent-green); transform: scaleY(0); transition: var(--transition-smooth); }
-        .snippet-card.active { border-color: rgba(0, 255, 102, 0.4); background: rgba(0, 255, 102, 0.05); }
-        .snippet-card.active::before { transform: scaleY(1); }
-        .snippet-card h5 { font-size: 0.95rem; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-light); }
-        .snippet-card.active h5 { color: var(--accent-green); }
+        .list-container { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 4px; }
+        .snippet-card { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 16px; cursor: pointer; transition: var(--transition-smooth); }
+        .snippet-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+        .snippet-card.active { border-color: var(--accent-purple); background: rgba(176, 38, 255, 0.1); box-shadow: 0 4px 20px rgba(176, 38, 255, 0.15); }
+        .snippet-card h5 { font-size: 0.95rem; margin-bottom: 6px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .snippet-card p { font-size: 0.8rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .editor-zone { display: flex; flex-direction: column; border-right: 1px solid var(--border); background: rgba(5, 8, 6, 0.3); position: relative; }
-        .zone-header { padding: 1rem 1.2rem; background: var(--panel-bg); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-shrink: 0; }
-        .zone-header input { background: transparent; border: none; color: white; font-weight: 600; outline: none; font-size: 16px; width: 100%; border-bottom: 1px solid transparent; padding: 8px 0; }
-        .zone-header input:focus { border-bottom-color: var(--accent-green); }
-        .ctrl-btns { display: flex; gap: 8px; flex-shrink: 0; }
+        /* Editor */
+        .zone-header { padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .zone-header input { background: transparent; border: none; color: white; font-weight: 600; font-size: 1.1rem; width: 100%; outline: none; }
         
-        .icon-btn { background: rgba(255,255,255,0.02); border: 1px solid var(--border); color: var(--text-gray); min-width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); }
-        .icon-btn:hover { background: rgba(0, 255, 102, 0.05); color: var(--text-light); }
-        .icon-btn:active { transform: scale(0.92); background: rgba(0, 255, 102, 0.1); }
+        .code-area { flex: 1; background: transparent; border: none; resize: none; outline: none; padding: 1.5rem; color: #e2d9f3; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 15px; tab-size: 2; }
 
-        .code-area { flex: 1; background: transparent; border: none; resize: none; outline: none; padding: 1.5rem; color: #c9decb; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 16px; width: 100%; tab-size: 2; }
-
-        .preview-zone { background: white; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        /* Preview */
+        .preview-header { padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-gray); }
+        .preview-header .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); margin-right: 8px; }
         
-        .preview-header { 
-            background: rgba(10, 16, 16, 0.95); 
-            padding: 1rem 1.5rem; 
-            border-bottom: 1px solid var(--border); 
-            color: var(--text-gray); 
-            font-size: 0.8rem; 
-            font-weight: 700; 
-            letter-spacing: 1.5px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            transition: padding-top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .iframe-wrapper { flex: 1; padding: 10px; display: flex; }
+        iframe { flex: 1; background: #fff; border: none; border-radius: 14px; } /* Slightly rounded iframe */
+
+        /* Buttons & Magnetic Effect */
+        .ctrl-btns { display: flex; gap: 10px; }
+        .icon-btn { 
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); 
+            width: 40px; height: 40px; border-radius: 12px; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: background 0.3s, color 0.3s, border 0.3s; /* Transform is handled by JS for magnetic effect */
+            will-change: transform;
         }
-        .preview-header .status { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
-        .preview-header span.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+        .icon-btn:hover { background: rgba(176, 38, 255, 0.2); border-color: rgba(176, 38, 255, 0.4); color: #fff; }
 
-        .iframe-wrapper { width: 100%; flex: 1; overflow: auto; background: white; -webkit-overflow-scrolling: touch; }
-        iframe { width: 100%; height: 100%; border: none; display: block; background: white; }
+        /* Fullscreen modifications */
+        body.fullscreen-mode nav { margin-top: -100px; opacity: 0; }
+        body.fullscreen-mode .main-layout { height: 100dvh; padding: 15px; grid-template-columns: 0px 0px 1fr; gap: 0; }
+        body.fullscreen-mode .sidebar, body.fullscreen-mode .editor-zone { display: none; }
+        body.fullscreen-mode .preview-zone { border-radius: 30px; }
 
+        /* --- MEDIA QUERY แก้ไขจุดบั๊กจอเล็กตรงนี้เรียบร้อยแล้ว --- */
         @media (max-width: 900px) {
-            nav { padding: 0.8rem; flex-wrap: wrap; gap: 10px; }
-            .brand { width: 100%; justify-content: center; padding-bottom: 5px; }
-            .mode-switcher { flex: 1; justify-content: center; }
-            .mode-btn { flex: 1; justify-content: center; }
-            .view-switcher { display: flex; flex: 1; }
-            .switch-btn { flex: 1; text-align: center; }
+            nav { flex-wrap: wrap; border-radius: 16px; margin: 10px; }
+            .brand { width: 100%; justify-content: center; margin-bottom: 10px; }
+            .view-switcher { display: flex; width: 100%; gap: 5px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 14px; }
+            .switch-btn { flex: 1; background: transparent; border: none; color: var(--text-gray); padding: 8px; border-radius: 10px; font-weight: 600; }
+            .switch-btn.active { background: rgba(176, 38, 255, 0.2); color: white; border: 1px solid rgba(176, 38, 255, 0.4); }
             
-            .main-layout { grid-template-columns: 1fr; position: relative; height: calc(100dvh - 125px); }
-
-            .sidebar, .editor-zone, .preview-zone {
-                position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-                opacity: 0; transform: translateX(10%); pointer-events: none;
-                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-                background: var(--bg-dark); z-index: 1;
+            .main-layout { grid-template-columns: 1fr; padding: 0 10px 10px 10px; position: relative; height: calc(100dvh - 140px); }
+            
+            /* แก้ไขให้จัดตำแหน่งจุดเริ่มต้นซ้าย (left: 10px) เพื่อให้สมมาตรเท่ากันทั้งสองข้าง */
+            .glass-panel { 
+                position: absolute; 
+                left: 10px;
+                width: calc(100% - 20px); 
+                height: calc(100% - 10px); 
+                opacity: 0; 
+                pointer-events: none; 
+                transform: scale(0.95); 
+                transition: var(--transition-smooth); 
             }
-
+            
             .main-layout.show-list .sidebar,
             .main-layout.show-editor .editor-zone,
             .main-layout.show-preview .preview-zone {
-                opacity: 1; transform: translateX(0); pointer-events: auto; z-index: 5;
+                opacity: 1; pointer-events: auto; transform: scale(1); z-index: 5;
             }
-            .main-layout.show-list .editor-zone, .main-layout.show-list .preview-zone { transform: translateX(-10%); }
-            .main-layout.show-editor .preview-zone { transform: translateX(-10%); }
         }
     </style>
 </head>
 <body>
 
+    <!-- Ambient Lights -->
+    <div class="ambient-light light-1"></div>
+    <div class="ambient-light light-2"></div>
+    <div class="ambient-light light-3"></div>
+
     <!-- NAV BAR -->
     <nav>
-        <div class="brand"><i class="fa-solid fa-layer-group"></i> NEO<span>VAULT</span></div>
+        <div class="brand"><i class="fa-solid fa-layer-group"></i> <span class="typewriter-text">NEO_VAULT</span></div>
         
         <div class="mode-switcher">
-            <button class="mode-btn active" id="mode-code" onclick="switchSystemMode('code')" aria-label="Switch to Code Mode"><i class="fa-solid fa-code"></i> CODE</button>
-            <button class="mode-btn" id="mode-prompt" onclick="switchSystemMode('prompt')" aria-label="Switch to Prompt Mode"><i class="fa-solid fa-brain"></i> PROMPT</button>
+            <button class="mode-btn active magnetic" id="mode-code" onclick="switchSystemMode('code')">CODE</button>
+            <button class="mode-btn magnetic" id="mode-prompt" onclick="switchSystemMode('prompt')">PROMPT</button>
         </div>
 
         <div class="view-switcher">
-            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')" aria-label="View Vault List"><i class="fa-solid fa-list"></i> Vault</button>
-            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')" aria-label="View Editor"><i class="fa-solid fa-pen-to-square"></i> Editor</button>
-            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')" aria-label="View Output"><i class="fa-solid fa-play"></i> View</button>
+            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')">Vault</button>
+            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')">Editor</button>
+            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')">View</button>
         </div>
     </nav>
 
     <!-- MAIN INTERFACE -->
     <div class="main-layout show-list" id="mainLayout">
         
-        <aside class="sidebar">
+        <aside class="glass-panel sidebar">
             <div class="sidebar-controls">
-                <button class="action-btn" id="actionBtn" onclick="addNewItem()" aria-label="Create New Item"><i class="fa-solid fa-plus"></i> New</button>
-                <button class="icon-btn" onclick="exportData()" title="Backup Data" aria-label="Backup Data"><i class="fa-solid fa-file-export"></i></button>
-                <button class="icon-btn" onclick="document.getElementById('importFile').click()" title="Restore Data" aria-label="Restore Data"><i class="fa-solid fa-file-import"></i></button>
+                <button class="action-btn magnetic" id="actionBtn" onclick="addNewItem()"><i class="fa-solid fa-plus"></i> New</button>
+                <button class="icon-btn magnetic" onclick="exportData()" title="Backup"><i class="fa-solid fa-file-export"></i></button>
+                <button class="icon-btn magnetic" onclick="document.getElementById('importFile').click()" title="Restore"><i class="fa-solid fa-file-import"></i></button>
                 <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
             </div>
             
-            <!-- NEW: Search Box -->
             <div class="search-container">
                 <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search title or content..." aria-label="Search snippets">
+                <input type="text" id="searchInput" placeholder="Search title or content...">
             </div>
 
             <div class="list-container" id="listContainer"></div>
         </aside>
 
-        <section class="editor-zone">
+        <section class="glass-panel editor-zone">
             <div class="zone-header">
-                <!-- Removed inline oninput -->
-                <input type="text" id="titleInput" value="Untitled" aria-label="Document Title">
+                <input type="text" id="titleInput" value="Untitled">
                 <div class="ctrl-btns">
-                    <button class="icon-btn" id="templateBtn" onclick="insertTemplate()" title="Insert Template" aria-label="Insert Template"><i class="fa-solid fa-code"></i></button>
-                    <button class="icon-btn" id="copyBtn" onclick="copyToClipboard()" title="Copy to Clipboard" aria-label="Copy to Clipboard"><i class="fa-solid fa-copy"></i></button>
-                    <button class="icon-btn" onclick="deleteCurrentItem()" title="Delete Item" aria-label="Delete Item" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
+                    <button class="icon-btn magnetic" id="templateBtn" onclick="insertTemplate()" title="Template"><i class="fa-solid fa-code"></i></button>
+                    <button class="icon-btn magnetic" id="copyBtn" onclick="copyToClipboard()" title="Copy"><i class="fa-solid fa-copy"></i></button>
+                    <button class="icon-btn magnetic" onclick="deleteCurrentItem()" title="Delete" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
-            <!-- Removed inline oninput -->
-            <textarea class="code-area" id="editor" placeholder="Write here..." aria-label="Code Editor"></textarea>
+            <textarea class="code-area" id="editor" placeholder="Start typing..."></textarea>
         </section>
 
-        <section class="preview-zone">
+        <section class="glass-panel preview-zone">
             <div class="preview-header">
-                <div class="status" id="previewStatus"><span class="dot"></span> LIVE OUTPUT</div>
-                
+                <div><span class="dot"></span> <span id="previewLabel">LIVE OUTPUT</span></div>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <div id="saveStatus" style="font-size: 0.75rem; color: #00ff66; font-weight: 600;">Saved</div>
-                    <button class="icon-btn" id="fullscreenBtn" onclick="toggleFullscreen()" title="Toggle Fullscreen" aria-label="Toggle Fullscreen" style="min-width: 38px; height: 38px; border-radius: 8px;">
-                        <i class="fa-solid fa-expand"></i>
-                    </button>
+                    <div id="saveStatus" style="color: var(--accent-purple); font-size: 0.75rem;">Saved</div>
+                    <button class="icon-btn magnetic" id="fullscreenBtn" onclick="toggleFullscreen()" style="width:32px; height:32px;"><i class="fa-solid fa-expand"></i></button>
                 </div>
             </div>
             <div class="iframe-wrapper">
-                <!-- SECURITY FIX: Removed allow-same-origin to prevent iframe from accessing parent localStorage -->
-                <iframe id="outputFrame" sandbox="allow-scripts" title="Preview Output"></iframe>
+                <iframe id="outputFrame" sandbox="allow-scripts"></iframe>
             </div>
         </section>
 
@@ -264,34 +268,39 @@
 
     <!-- LOGIC ENGINE -->
     <script>
-        const defaultCodeData = [
-            { id: 101, title: "iOS Safe Gradient", code: "<div style='min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #0f2027, #203a43, #2c5364); font-family:sans-serif; color:white; text-align:center; padding:20px;'>\n  <div>\n    <h1 style='color:#00ff66;'>System Ready</h1>\n    <p>Safe layout designed for modern mobile displays.</p>\n  </div>\n</div>" }
-        ];
+        const defaultCodeData = [{ id: 101, title: "Neon Glass Button", code: "<style>\n  body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }\n  .btn { background: rgba(176, 38, 255, 0.1); border: 1px solid rgba(176, 38, 255, 0.5); color: #fff; padding: 15px 30px; border-radius: 12px; font-size: 16px; cursor: pointer; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(176, 38, 255, 0.2); transition: all 0.3s; }\n  .btn:hover { background: rgba(176, 38, 255, 0.3); box-shadow: 0 0 30px rgba(176, 38, 255, 0.5); transform: translateY(-2px); }\n</style>\n<button class=\"btn\">Hover Me</button>" }];
+        const defaultPromptData = [{ id: 201, title: "Cyberpunk Story Generator", code: "คุณคือ AI นักแต่งนิยาย Sci-Fi\n\nโจทย์: สร้างพล็อตเรื่องสั้นเกี่ยวกับแฮกเกอร์ที่ค้นพบความลับในระบบของรัฐบาล\nMood & Tone: มืดมน, ฝนตก, นีออน, ลุ้นระทึก" }];
 
-        const defaultPromptData = [
-            { id: 201, title: "iOS App Idea Validator", code: "คุณคือ Product Manager ระดับ Senior ของ Apple\n\nจงวิเคราะห์ไอเดียแอปพลิเคชันต่อไปนี้:\n1. ความเป็นไปได้ทางเทคนิค (iOS APIs)\n2. กลุ่มเป้าหมาย\n3. วิธีหาเงิน (Monetization)\n\n[ใส่ไอเดียแอปของคุณที่นี่]" }
-        ];
+        let currentMode = 'code', storage = [], activeId = null, isFullscreen = false, debounceTimer;
 
-        let currentMode = 'code';
-        let storage = [];
-        let activeId = null;
-        let isFullscreen = false;
-        let debounceTimer; // For performance optimization
+        /* --- MAGNETIC BUTTON EFFECT --- */
+        function initMagneticButtons() {
+            document.querySelectorAll('.magnetic').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                    btn.style.transition = 'none';
+                });
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                    btn.style.transform = `translate(0px, 0px)`;
+                });
+            });
+        }
 
         // Initialize System
         function initSystemMode() {
-            const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
+            const key = currentMode === 'code' ? 'neo_vault_v3_code' : 'neo_vault_v3_prompt';
             storage = JSON.parse(localStorage.getItem(key)) || (currentMode === 'code' ? defaultCodeData : defaultPromptData);
             activeId = storage.length > 0 ? storage[0].id : Date.now();
             
-            document.getElementById('actionBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-plus"></i> New Code` : `<i class="fa-solid fa-plus"></i> New Prompt`;
+            document.getElementById('actionBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-plus"></i> Code` : `<i class="fa-solid fa-plus"></i> Prompt`;
             document.getElementById('editor').style.fontFamily = currentMode === 'code' ? "'Fira Code', monospace" : "'Plus Jakarta Sans', sans-serif";
-            document.getElementById('previewStatus').innerHTML = currentMode === 'code' ? `<span class="dot"></span> WEB PREVIEW` : `<span class="dot"></span> PROMPT VIEW`;
-            document.getElementById('templateBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-laptop-code"></i>` : `<i class="fa-solid fa-file-invoice"></i>`;
+            document.getElementById('previewLabel').innerText = currentMode === 'code' ? `WEB PREVIEW` : `PROMPT VIEW`;
             
-            // Clear search on switch
             document.getElementById('searchInput').value = '';
-            
             renderSidebar();
             selectItem(activeId);
         }
@@ -303,27 +312,18 @@
             initSystemMode();
         }
 
-        // Feature: Search / Filter Logic
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            renderSidebar(e.target.value);
-        });
+        document.getElementById('searchInput').addEventListener('input', (e) => renderSidebar(e.target.value));
 
         function renderSidebar(filterText = '') {
             const container = document.getElementById('listContainer');
             container.innerHTML = '';
             const lowerFilter = filterText.toLowerCase();
 
-            const filteredStorage = storage.filter(item => 
-                (item.title && item.title.toLowerCase().includes(lowerFilter)) ||
-                (item.code && item.code.toLowerCase().includes(lowerFilter))
-            );
+            const filtered = storage.filter(item => (item.title && item.title.toLowerCase().includes(lowerFilter)) || (item.code && item.code.toLowerCase().includes(lowerFilter)));
 
-            if (filteredStorage.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:20px; font-size: 0.9rem;">No results found.</p>`;
-                return;
-            }
+            if (!filtered.length) return container.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:20px; font-size:0.9rem;">No data.</p>`;
 
-            filteredStorage.forEach((item) => {
+            filtered.forEach(item => {
                 const card = document.createElement('div');
                 card.className = `snippet-card ${item.id === activeId ? 'active' : ''}`;
                 card.onclick = () => selectItem(item.id);
@@ -335,20 +335,16 @@
 
         function selectItem(id) {
             activeId = id;
-            const current = storage.find(item => item.id === id);
+            const current = storage.find(i => i.id === id);
             if(current) {
                 document.getElementById('titleInput').value = current.title;
                 document.getElementById('editor').value = current.code;
-                liveRender(); // Render immediately on select
-                
-                // Keep filter active if user searched
-                const currentFilter = document.getElementById('searchInput').value;
-                renderSidebar(currentFilter);
+                liveRender();
+                renderSidebar(document.getElementById('searchInput').value);
             }
             if(window.innerWidth <= 900) switchMobileView('editor');
         }
 
-        // Fix: Debounce Logic for Input
         function handleInputActivity() {
             const statusNode = document.getElementById('saveStatus');
             statusNode.innerText = "Typing...";
@@ -358,22 +354,19 @@
             debounceTimer = setTimeout(() => {
                 saveCurrentData();
                 liveRender();
-            }, 600); // Wait 600ms after user stops typing
+            }, 600);
         }
 
         document.getElementById('editor').addEventListener('input', handleInputActivity);
         document.getElementById('titleInput').addEventListener('input', handleInputActivity);
 
-        // Feature: Tab Key Support in Textarea
         document.getElementById('editor').addEventListener('keydown', function(e) {
             if (e.key === 'Tab') {
                 e.preventDefault();
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
-                // Insert 2 spaces
+                const start = this.selectionStart, end = this.selectionEnd;
                 this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 2;
-                handleInputActivity(); // Trigger save
+                handleInputActivity();
             }
         });
 
@@ -381,132 +374,95 @@
             const code = document.getElementById('editor').value;
             const iframe = document.getElementById('outputFrame');
             
-            if (currentMode === 'code') {
-                iframe.srcdoc = code;
-            } else {
-                const htmlPromptView = `
+            if (currentMode === 'code') { iframe.srcdoc = code; } 
+            else {
+                iframe.srcdoc = `
                     <!DOCTYPE html><html><head><style>
-                        body { background: #090d16; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; padding: 20px; margin: 0; line-height: 1.6; font-size: 16px; }
-                        .prompt-box { border: 1px solid rgba(0, 255, 102, 0.15); padding: 20px; background: rgba(10, 16, 16, 0.7); border-radius: 12px; white-space: pre-wrap; word-wrap: break-word; }
-                        .tag { display: inline-block; background: rgba(0, 255, 102, 0.1); color: #00ff66; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 15px; }
+                        body { background: #0c0814; color: #f8f6fb; font-family: system-ui; padding: 20px; line-height: 1.6; }
+                        .box { border: 1px solid rgba(176,38,255,0.2); padding: 20px; background: rgba(176,38,255,0.05); border-radius: 16px; white-space: pre-wrap; word-wrap: break-word; }
+                        .tag { display: inline-block; background: var(--accent-purple); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
                     </style></head><body>
-                        <div class="tag">PROMPT RENDER</div>
-                        <div class="prompt-box">${code ? code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '<span style="color:#666">No content...</span>'}</div>
-                    </body></html>
-                `;
-                iframe.srcdoc = htmlPromptView;
+                        <div class="tag">PROMPT</div>
+                        <div class="box">${code ? code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'Empty...'}</div>
+                    </body></html>`;
             }
         }
 
         function saveCurrentData() {
-            const current = storage.find(item => item.id === activeId);
+            const current = storage.find(i => i.id === activeId);
             if(current) {
                 current.title = document.getElementById('titleInput').value;
                 current.code = document.getElementById('editor').value;
                 updateLocalStorage();
-                
-                // Refresh sidebar subtly to show title changes
-                const currentFilter = document.getElementById('searchInput').value;
-                renderSidebar(currentFilter);
+                renderSidebar(document.getElementById('searchInput').value);
             }
         }
 
-        // Fix: Safe Storage Handling
         function updateLocalStorage() {
-            const key = currentMode === 'code' ? 'neo_vault_db_code_v2' : 'neo_vault_db_prompt_v2';
+            const key = currentMode === 'code' ? 'neo_vault_v3_code' : 'neo_vault_v3_prompt';
             const statusNode = document.getElementById('saveStatus');
-            
             try {
                 localStorage.setItem(key, JSON.stringify(storage));
-                statusNode.innerText = "Saved";
-                statusNode.style.color = "#00ff66";
+                statusNode.innerText = "Saved"; statusNode.style.color = "var(--accent-purple)";
             } catch (e) {
-                if (e.name === 'QuotaExceededError' || e.message.includes('quota')) {
-                    statusNode.innerText = "Storage Full!";
-                    statusNode.style.color = "#ff4545";
-                    alert("⚠️ คำเตือน: พื้นที่เก็บข้อมูล (LocalStorage) ของเบราว์เซอร์เต็มแล้ว\nกรุณากดปุ่ม Export (สำรองข้อมูล) และลบข้อมูลเก่าทิ้ง");
-                } else {
-                    console.error("Storage Error:", e);
-                }
+                statusNode.innerText = "Storage Full!"; statusNode.style.color = "#ff4545";
+                alert("⚠️ LocalStorage is full!");
             }
         }
 
         function addNewItem() {
             const newId = Date.now();
-            const newItem = currentMode === 'code' 
-                ? { id: newId, title: "New Snippet", code: "<!-- HTML Here -->" }
-                : { id: newId, title: "New Prompt", code: "คำสั่งของคุณ..." };
-            storage.unshift(newItem);
-            activeId = newId;
-            updateLocalStorage();
-            
-            // Clear search so the new item is visible
+            storage.unshift({ id: newId, title: "Untitled", code: "" });
+            activeId = newId; updateLocalStorage();
             document.getElementById('searchInput').value = '';
-            renderSidebar();
-            selectItem(newId);
+            renderSidebar(); selectItem(newId);
+            document.getElementById('editor').focus();
         }
 
         function deleteCurrentItem() {
             if(storage.length <= 1) return alert("Cannot delete the last item.");
-            const confirmDelete = confirm("Are you sure you want to delete this snippet?");
-            if(!confirmDelete) return;
-
-            storage = storage.filter(item => item.id !== activeId);
-            activeId = storage[0].id;
-            updateLocalStorage();
-            selectItem(activeId);
+            if(!confirm("Delete this item?")) return;
+            storage = storage.filter(i => i.id !== activeId);
+            activeId = storage[0].id; updateLocalStorage(); selectItem(activeId);
         }
 
         function insertTemplate() {
-            const template = currentMode === 'code' 
-                ? `<!DOCTYPE html>\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<style>\n  body { font-family: -apple-system, sans-serif; padding: 20px; }\n  .btn { background: #007aff; color: white; padding: 12px 20px; border: none; border-radius: 8px; width: 100%; font-size: 16px; cursor: pointer; }\n</style>\n<body>\n  <h2>Native iOS Style</h2>\n  <button class="btn">Tap Me</button>\n</body>`
-                : `[Role]: ผู้เชี่ยวชาญด้าน ...\n[Task]: ช่วยอธิบาย ...\n[Tone]: เข้าใจง่าย`;
-            document.getElementById('editor').value = template;
+            document.getElementById('editor').value = currentMode === 'code' 
+                ? `<!DOCTYPE html>\n<style>\n  body { font-family: sans-serif; padding: 20px; }\n</style>\n<body>\n  <h2>Hello World</h2>\n</body>`
+                : `[Role]: ...\n[Task]: ...\n[Format]: ...`;
             handleInputActivity();
         }
 
         function copyToClipboard() {
-            const code = document.getElementById('editor').value;
-            navigator.clipboard.writeText(code).then(() => {
+            navigator.clipboard.writeText(document.getElementById('editor').value).then(() => {
                 const btn = document.getElementById('copyBtn');
                 btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-                btn.style.color = 'var(--accent-green)';
-                setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-copy"></i>'; btn.style.color = ''; }, 1500);
-            }).catch(err => {
-                alert("Failed to copy text.");
+                setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-copy"></i>', 1500);
             });
         }
 
         function exportData() {
-            const dataStr = JSON.stringify(storage, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
+            const blob = new Blob([JSON.stringify(storage, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
-            a.href = url;
-            a.download = `NeoVault_Backup_${currentMode}_${new Date().getTime()}.json`;
+            a.href = URL.createObjectURL(blob);
+            a.download = `NeoVault_V3_${currentMode}_${Date.now()}.json`;
             a.click();
-            URL.revokeObjectURL(url);
         }
 
         function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = e => {
                 try {
                     const imported = JSON.parse(e.target.result);
-                    if(Array.isArray(imported) && imported.length > 0) {
-                        storage = imported; 
-                        updateLocalStorage(); 
+                    if(Array.isArray(imported)) {
+                        storage = imported; updateLocalStorage();
                         document.getElementById('searchInput').value = '';
-                        renderSidebar(); 
-                        selectItem(storage[0].id);
-                        alert("Data restored successfully.");
-                    } else {
-                        alert("Invalid data format.");
+                        renderSidebar(); selectItem(storage[0].id);
                     }
-                } catch (err) { alert("Error reading backup file."); }
-                event.target.value = ''; 
+                } catch(err) { alert("Invalid file."); }
+                event.target.value = '';
             };
             reader.readAsText(file);
         }
@@ -515,33 +471,20 @@
             const layout = document.getElementById('mainLayout');
             layout.className = 'main-layout';
             layout.classList.add(`show-${viewName}`);
-
             document.querySelectorAll('.switch-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${viewName}`).classList.add('active');
         }
 
         function toggleFullscreen() {
             isFullscreen = !isFullscreen;
+            document.body.classList.toggle('fullscreen-mode');
             const btn = document.getElementById('fullscreenBtn');
-            
-            if(isFullscreen) {
-                document.body.classList.add('fullscreen-mode');
-                btn.innerHTML = '<i class="fa-solid fa-compress"></i>';
-                btn.style.color = 'var(--accent-green)';
-                btn.style.borderColor = 'var(--accent-green)';
-                btn.style.background = 'rgba(0, 255, 102, 0.1)';
-            } else {
-                document.body.classList.remove('fullscreen-mode');
-                btn.innerHTML = '<i class="fa-solid fa-expand"></i>';
-                btn.style.color = 'var(--text-gray)';
-                btn.style.borderColor = 'var(--border)';
-                btn.style.background = 'rgba(255,255,255,0.02)';
-            }
+            btn.innerHTML = isFullscreen ? '<i class="fa-solid fa-compress"></i>' : '<i class="fa-solid fa-expand"></i>';
         }
 
         window.onload = () => {
-            if(window.innerWidth > 900) { document.getElementById('mainLayout').className = 'main-layout show-list'; }
             initSystemMode();
+            initMagneticButtons();
         };
     </script>
 </body>
