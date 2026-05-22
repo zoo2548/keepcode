@@ -1,491 +1,1151 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEO_VAULT V3.0 // Spatial Edition</title>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Zenith — Premium Strategy Suite</title>
+    <!-- Lucide Icons & Typography -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            /* Color Palette: Dark Mode + Neon Purple */
-            --bg-base: #05030a;
-            --accent-purple: #b026ff;
-            --accent-purple-glow: rgba(176, 38, 255, 0.4);
-            --accent-pink: #ff26b0;
-            --text-light: #f8f6fb;
-            --text-gray: #8a849b;
-            
-            /* Glassmorphism */
-            --glass-bg: rgba(20, 15, 30, 0.4);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-highlight: rgba(255, 255, 255, 0.15);
-            --glass-blur: blur(28px);
-            
-            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --bg-ambient: #fcfcfd;
+            --surface-glass: rgba(255, 255, 255, 0.85);
+            --card-base: #ffffff;
+            --text-primary: #0a0d14;
+            --text-secondary: #64748b;
+            --accent-gold: #b4975a;
+            --accent-gold-light: rgba(180, 151, 90, 0.1);
+            --border-crisp: rgba(0, 0, 0, 0.06);
+            --shadow-luxury: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+            --tint-fitness: #10b981;
+            --danger: #ef4444;
+            --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+            --input-bg: #f8fafc;
+            --cal-day-bg: #f8fafc;
+        }
+
+        /* --- Dark Mode Theme Overrides --- */
+        [data-theme="dark"] {
+            --bg-ambient: #0b0f17;
+            --surface-glass: rgba(15, 23, 42, 0.85);
+            --card-base: #131926;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-gold: #d4af37;
+            --accent-gold-light: rgba(212, 175, 55, 0.15);
+            --border-crisp: rgba(255, 255, 255, 0.06);
+            --shadow-luxury: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --input-bg: #1e293b;
+            --cal-day-bg: #1e293b;
         }
 
         * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
         body {
-            background-color: var(--bg-base);
-            color: var(--text-light);
-            height: 100dvh; 
-            display: flex; flex-direction: column;
-            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-ambient);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.4s var(--ease-premium), color 0.4s var(--ease-premium);
+        }
+
+        /* Ambient subtle light source */
+        .ambient-glow {
+            position: fixed;
+            top: -10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(180, 151, 90, 0.06) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        [data-theme="dark"] .ambient-glow {
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, rgba(0,0,0,0) 70%);
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
             position: relative;
+            z-index: 1;
+            padding: 24px 24px 120px 24px;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Ambient Background Lights */
-        .ambient-light {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: -1; animation: float 15s infinite ease-in-out alternate;
-        }
-        .light-1 { width: 40vw; height: 40vw; background: var(--accent-purple); top: -10%; left: -10%; }
-        .light-2 { width: 35vw; height: 35vw; background: #3b00ff; bottom: -10%; right: -5%; animation-delay: -5s; }
-        .light-3 { width: 25vw; height: 25vw; background: var(--accent-pink); top: 40%; left: 40%; opacity: 0.3; animation-delay: -10s; }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, 30px) scale(1.1); }
+        /* --- Header --- */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 4px 0;
         }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(176, 38, 255, 0.3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-purple); }
+        .brand-space {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        /* --- FLOATING NAVIGATION --- */
-        nav {
-            display: flex; justify-content: space-between; align-items: center;
-            margin: 15px 20px; padding: 12px 20px;
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid var(--glass-highlight); /* Specular Highlight */
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: var(--text-primary);
+            color: var(--bg-ambient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theme-toggle-btn {
+            border: 1px solid var(--border-crisp);
+            background: var(--card-base);
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-luxury);
+            transition: all 0.3s;
+        }
+
+        .header-cancel-btn {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.08);
+            padding: 8px 14px;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            z-index: 10;
-            transition: var(--transition-smooth);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Typewriter Animation */
-        .brand { 
-            font-weight: 700; font-size: 1.2rem; letter-spacing: 2px; 
-            display: flex; align-items: center; gap: 10px;
-        }
-        .brand i { color: var(--accent-purple); text-shadow: 0 0 15px var(--accent-purple); }
-        .typewriter-text {
-            display: inline-block;
-            overflow: hidden; white-space: nowrap;
-            border-right: 2px solid var(--accent-purple);
-            animation: typing 2s steps(20, end) forwards, blink 0.75s step-end infinite;
-            width: 0;
+        /* --- Search Bar --- */
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
         }
 
-        @keyframes typing { to { width: 108px; } } /* Adjusted to fit "NEO_VAULT" */
-        @keyframes blink { 50% { border-color: transparent; } }
-
-        .mode-switcher { display: flex; background: rgba(0, 0, 0, 0.3); padding: 4px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
-        .mode-btn { background: transparent; border: none; color: var(--text-gray); padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: var(--transition-smooth); }
-        .mode-btn.active { color: #fff; background: rgba(176, 38, 255, 0.2); box-shadow: 0 0 15px rgba(176, 38, 255, 0.2); border: 1px solid rgba(176, 38, 255, 0.4); }
-
-        .view-switcher { display: none; }
-
-        /* --- FLOATING ARCHITECTURE (WIDGETS) --- */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 320px 1fr 1fr;
-            gap: 20px; padding: 0 20px 20px 20px;
-            flex: 1; height: calc(100dvh - 90px);
+        .search-container svg {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
         }
 
-        .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid var(--glass-highlight);
+        .search-input {
+            padding-left: 44px !important;
+        }
+
+        /* --- Forms & Inputs --- */
+        .premium-input-deck {
+            background: var(--card-base);
+            border: 1px solid var(--border-crisp);
             border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            display: flex; flex-direction: column;
-            overflow: hidden;
+            padding: 20px;
+            box-shadow: var(--shadow-luxury);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .text-input-wrapper {
             position: relative;
         }
 
-        /* Sidebar */
-        .sidebar { padding: 1.5rem; gap: 1.2rem; }
-        .sidebar-controls { display: flex; gap: 10px; flex-shrink: 0; }
-        
-        .search-container { position: relative; flex-shrink: 0; }
-        .search-container input { width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); padding: 10px 15px 10px 38px; border-radius: 12px; outline: none; transition: var(--transition-smooth); }
-        .search-container input:focus { border-color: var(--accent-purple); background: rgba(176, 38, 255, 0.05); box-shadow: 0 0 10px rgba(176, 38, 255, 0.1); }
-        .search-container i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-gray); }
-
-        .action-btn { background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white; border: none; padding: 12px; border-radius: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px var(--accent-purple-glow); transition: var(--transition-smooth); flex: 1; }
-        .action-btn:active { transform: scale(0.95); }
-
-        .list-container { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; padding-right: 4px; }
-        .snippet-card { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 16px; cursor: pointer; transition: var(--transition-smooth); }
-        .snippet-card:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
-        .snippet-card.active { border-color: var(--accent-purple); background: rgba(176, 38, 255, 0.1); box-shadow: 0 4px 20px rgba(176, 38, 255, 0.15); }
-        .snippet-card h5 { font-size: 0.95rem; margin-bottom: 6px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .snippet-card p { font-size: 0.8rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* Editor */
-        .zone-header { padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .zone-header input { background: transparent; border: none; color: white; font-weight: 600; font-size: 1.1rem; width: 100%; outline: none; }
-        
-        .code-area { flex: 1; background: transparent; border: none; resize: none; outline: none; padding: 1.5rem; color: #e2d9f3; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 15px; tab-size: 2; }
-
-        /* Preview */
-        .preview-header { padding: 1rem 1.5rem; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px; color: var(--text-gray); }
-        .preview-header .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); margin-right: 8px; }
-        
-        .iframe-wrapper { flex: 1; padding: 10px; display: flex; }
-        iframe { flex: 1; background: #fff; border: none; border-radius: 14px; } /* Slightly rounded iframe */
-
-        /* Buttons & Magnetic Effect */
-        .ctrl-btns { display: flex; gap: 10px; }
-        .icon-btn { 
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-light); 
-            width: 40px; height: 40px; border-radius: 12px; cursor: pointer; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: background 0.3s, color 0.3s, border 0.3s; /* Transform is handled by JS for magnetic effect */
-            will-change: transform;
+        .premium-input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.3s var(--ease-premium);
         }
-        .icon-btn:hover { background: rgba(176, 38, 255, 0.2); border-color: rgba(176, 38, 255, 0.4); color: #fff; }
 
-        /* Fullscreen modifications */
-        body.fullscreen-mode nav { margin-top: -100px; opacity: 0; }
-        body.fullscreen-mode .main-layout { height: 100dvh; padding: 15px; grid-template-columns: 0px 0px 1fr; gap: 0; }
-        body.fullscreen-mode .sidebar, body.fullscreen-mode .editor-zone { display: none; }
-        body.fullscreen-mode .preview-zone { border-radius: 30px; }
+        .premium-input:focus {
+            background: var(--card-base);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 4px var(--accent-gold-light);
+        }
 
-        /* --- MEDIA QUERY แก้ไขจุดบั๊กจอเล็กตรงนี้เรียบร้อยแล้ว --- */
-        @media (max-width: 900px) {
-            nav { flex-wrap: wrap; border-radius: 16px; margin: 10px; }
-            .brand { width: 100%; justify-content: center; margin-bottom: 10px; }
-            .view-switcher { display: flex; width: 100%; gap: 5px; margin-top: 10px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 14px; }
-            .switch-btn { flex: 1; background: transparent; border: none; color: var(--text-gray); padding: 8px; border-radius: 10px; font-weight: 600; }
-            .switch-btn.active { background: rgba(176, 38, 255, 0.2); color: white; border: 1px solid rgba(176, 38, 255, 0.4); }
-            
-            .main-layout { grid-template-columns: 1fr; padding: 0 10px 10px 10px; position: relative; height: calc(100dvh - 140px); }
-            
-            /* แก้ไขให้จัดตำแหน่งจุดเริ่มต้นซ้าย (left: 10px) เพื่อให้สมมาตรเท่ากันทั้งสองข้าง */
-            .glass-panel { 
-                position: absolute; 
-                left: 10px;
-                width: calc(100% - 20px); 
-                height: calc(100% - 10px); 
-                opacity: 0; 
-                pointer-events: none; 
-                transform: scale(0.95); 
-                transition: var(--transition-smooth); 
-            }
-            
-            .main-layout.show-list .sidebar,
-            .main-layout.show-editor .editor-zone,
-            .main-layout.show-preview .preview-zone {
-                opacity: 1; pointer-events: auto; transform: scale(1); z-index: 5;
-            }
+        .form-split-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 12px;
+        }
+
+        .premium-btn {
+            width: 100%;
+            background: var(--text-primary);
+            color: var(--bg-ambient);
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-premium);
+        }
+
+        .premium-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .premium-btn.edit-mode-active {
+            background: var(--accent-gold);
+            color: #ffffff;
+        }
+
+        /* --- App Pages --- */
+        .app-page {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px) scale(0.98);
+            transition: opacity 0.3s var(--ease-premium), transform 0.3s var(--ease-premium);
+        }
+
+        .app-page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* --- Luxury Task Cards --- */
+        .task-card-luxury {
+            background: var(--card-base);
+            border: 1px solid var(--border-crisp);
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: var(--shadow-luxury);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.4s var(--ease-premium);
+        }
+
+        .task-card-luxury.completed {
+            opacity: 0.5;
+            background: var(--input-bg);
+        }
+
+        @keyframes pulseBorder {
+            0% { border-color: var(--border-crisp); box-shadow: var(--shadow-luxury); }
+            50% { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239,68,68,0.1); }
+            100% { border-color: var(--border-crisp); box-shadow: var(--shadow-luxury); }
+        }
+
+        .deadline-pulse {
+            animation: pulseBorder 2s infinite ease-in-out;
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        /* Elastic Checkbox */
+        .elastic-checkbox {
+            position: relative;
+            cursor: pointer;
+            display: block;
+            width: 24px;
+            height: 24px;
+        }
+
+        .elastic-checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0; width: 0;
+        }
+
+        .checkmark-disk {
+            position: absolute;
+            top: 0; left: 0;
+            height: 24px; width: 24px;
+            background-color: var(--input-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+            transition: all 0.3s var(--ease-premium);
+        }
+
+        .elastic-checkbox input:checked ~ .checkmark-disk {
+            background-color: var(--text-primary);
+            color: var(--bg-ambient);
+            transform: scale(1.05);
+        }
+
+        .checkmark-disk svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 3.5;
+        }
+
+        .task-detail-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .luxury-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+            transition: all 0.2s;
+        }
+
+        .completed .luxury-title {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .badge-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .luxury-badge {
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .luxury-badge svg {
+            opacity: 0.7;
+        }
+
+        .luxury-badge.deadline-alert {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .card-control-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .control-trigger {
+            border: none;
+            background: transparent;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-trigger:hover {
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .control-trigger.trash:hover {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--danger);
+        }
+
+        /* --- Dashboard --- */
+        .luxury-dash-layout {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .architectural-card {
+            background: var(--card-base);
+            border: 1px solid var(--border-crisp);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow-luxury);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .hero-segment {
+            grid-column: span 2;
+            gap: 14px;
+        }
+
+        .progress-micro-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .premium-progress-track {
+            width: 100%;
+            height: 6px;
+            background: var(--input-bg);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .premium-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--text-primary);
+            border-radius: 3px;
+            transition: width 0.6s var(--ease-premium);
+        }
+
+        .dash-lbl {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .arch-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        /* --- Calendar Panel --- */
+        .immersive-calendar {
+            background: var(--card-base);
+            border: 1px solid var(--border-crisp);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: var(--shadow-luxury);
+            margin-bottom: 24px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .cal-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+
+        .cal-matrix {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .cal-weekday {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            padding-bottom: 4px;
+        }
+
+        .cal-unit-day {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            background: var(--cal-day-bg);
+        }
+
+        .cal-unit-day:hover:not(.blank) {
+            background: var(--border-crisp);
+        }
+
+        .cal-unit-day.blank {
+            background: transparent;
+            cursor: default;
+        }
+
+        .cal-unit-day.current {
+            background: var(--accent-gold-light);
+            color: var(--accent-gold);
+        }
+
+        .cal-unit-day.active-select {
+            background: var(--text-primary) !important;
+            color: var(--bg-ambient) !important;
+        }
+
+        .cal-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 4px;
+        }
+
+        .cal-unit-day.active-select .cal-dot {
+            background: var(--bg-ambient);
+        }
+
+        .cal-dot.critical {
+            background: var(--danger);
+        }
+
+        /* --- Navigation Dock --- */
+        .omni-nav-dock {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 48px);
+            max-width: 380px;
+            background: rgba(10, 13, 20, 0.96);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 6px;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
+
+        [data-theme="dark"] .omni-nav-dock {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .dock-item {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 10px 0;
+            cursor: pointer;
+            border-radius: 22px;
+            transition: all 0.3s var(--ease-premium);
+        }
+
+        .dock-item svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.2;
+            transition: transform 0.3s var(--ease-premium);
+        }
+
+        .dock-item.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dock-item.active svg {
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .empty-lux-state {
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-    <!-- Ambient Lights -->
-    <div class="ambient-light light-1"></div>
-    <div class="ambient-light light-2"></div>
-    <div class="ambient-light light-3"></div>
+    <div class="ambient-glow"></div>
 
-    <!-- NAV BAR -->
-    <nav>
-        <div class="brand"><i class="fa-solid fa-layer-group"></i> <span class="typewriter-text">NEO_VAULT</span></div>
-        
-        <div class="mode-switcher">
-            <button class="mode-btn active magnetic" id="mode-code" onclick="switchSystemMode('code')">CODE</button>
-            <button class="mode-btn magnetic" id="mode-prompt" onclick="switchSystemMode('prompt')">PROMPT</button>
+    <div class="app-container">
+        <!-- Premium Header -->
+        <header class="app-header">
+            <div class="brand-space">
+                <div class="brand-logo"><i data-lucide="activity" style="width: 18px; height: 18px;"></i></div>
+                <span class="brand-name">Zenith</span>
+            </div>
+            <div class="header-controls">
+                <div id="cancel-edit-btn" class="header-cancel-btn" onclick="cancelEdit()">
+                    <i data-lucide="x" style="width:14px; height:14px;"></i> Cancel
+                </div>
+                <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Appearance">
+                    <i id="theme-icon" data-lucide="moon" style="width: 18px; height: 18px;"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Page 1: Tasks -->
+        <div id="page-tasks" class="app-page active">
+            
+            <!-- Category Search Bar -->
+            <div class="search-container">
+                <i data-lucide="search" style="width: 18px; height: 18px;"></i>
+                <input type="text" id="search-category" class="premium-input search-input" placeholder="Search by category..." oninput="renderTaskList()">
+            </div>
+
+            <!-- Creation Deck -->
+            <div class="premium-input-deck">
+                <div class="text-input-wrapper">
+                    <input type="text" id="form-title" class="premium-input" placeholder="What is your next focus?">
+                </div>
+                <div class="form-split-row">
+                    <input type="text" id="form-category" class="premium-input" placeholder="Category (e.g. Work, Life)">
+                    <input type="date" id="form-date" class="premium-input">
+                </div>
+                <button class="premium-btn" id="main-submit-btn" onclick="handleFormSubmit()">
+                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i> <span>Create Task</span>
+                </button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;" id="task-list-container"></div>
         </div>
 
-        <div class="view-switcher">
-            <button class="switch-btn active" id="btn-list" onclick="switchMobileView('list')">Vault</button>
-            <button class="switch-btn" id="btn-editor" onclick="switchMobileView('editor')">Editor</button>
-            <button class="switch-btn" id="btn-preview" onclick="switchMobileView('preview')">View</button>
-        </div>
-    </nav>
+        <!-- Page 2: Dashboard -->
+        <div id="page-dashboard" class="app-page">
+            <div class="luxury-dash-layout">
+                <div class="architectural-card hero-segment">
+                    <div class="progress-micro-text">
+                        <span style="font-weight: 600; font-size: 15px;">Total Efficiency</span>
+                        <span id="dash-percent" style="font-size: 26px; font-weight: 700;">0%</span>
+                    </div>
+                    <div class="premium-progress-track"><div id="dash-bar-fill" class="premium-progress-bar"></div></div>
+                    <span id="dash-progress-text" style="font-size: 12px; color: var(--text-secondary);">0 of 0 completed</span>
+                </div>
 
-    <!-- MAIN INTERFACE -->
-    <div class="main-layout show-list" id="mainLayout">
-        
-        <aside class="glass-panel sidebar">
-            <div class="sidebar-controls">
-                <button class="action-btn magnetic" id="actionBtn" onclick="addNewItem()"><i class="fa-solid fa-plus"></i> New</button>
-                <button class="icon-btn magnetic" onclick="exportData()" title="Backup"><i class="fa-solid fa-file-export"></i></button>
-                <button class="icon-btn magnetic" onclick="document.getElementById('importFile').click()" title="Restore"><i class="fa-solid fa-file-import"></i></button>
-                <input type="file" id="importFile" style="display:none" onchange="importData(event)" accept=".json">
+                <div class="architectural-card">
+                    <span class="dash-lbl">All Focuses</span>
+                    <span class="arch-value" id="dash-all-count">0</span>
+                </div>
+
+                <div class="architectural-card">
+                    <span class="dash-lbl">Completed</span>
+                    <span class="arch-value" id="dash-completed-count" style="color: var(--tint-fitness);">0</span>
+                </div>
+
+                <div class="architectural-card">
+                    <span class="dash-lbl">Pending</span>
+                    <span class="arch-value" id="dash-pending-count">0</span>
+                </div>
+
+                <div class="architectural-card" id="dash-card-deadline">
+                    <span class="dash-lbl">Near Deadline</span>
+                    <span class="arch-value" id="dash-deadline-count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page 3: Calendar -->
+        <div id="page-calendar" class="app-page">
+            <div class="immersive-calendar">
+                <div class="cal-top-bar">
+                    <span id="calendar-month-year">...</span>
+                    <i data-lucide="calendar" style="width: 18px; height: 18px; color: var(--text-secondary);"></i>
+                </div>
+                <div class="cal-matrix" id="calendar-grid"></div>
             </div>
             
-            <div class="search-container">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search title or content...">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <span id="calendar-list-title" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); padding-left: 4px;">Agenda</span>
+                <div id="calendar-task-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
             </div>
+        </div>
 
-            <div class="list-container" id="listContainer"></div>
-        </aside>
-
-        <section class="glass-panel editor-zone">
-            <div class="zone-header">
-                <input type="text" id="titleInput" value="Untitled">
-                <div class="ctrl-btns">
-                    <button class="icon-btn magnetic" id="templateBtn" onclick="insertTemplate()" title="Template"><i class="fa-solid fa-code"></i></button>
-                    <button class="icon-btn magnetic" id="copyBtn" onclick="copyToClipboard()" title="Copy"><i class="fa-solid fa-copy"></i></button>
-                    <button class="icon-btn magnetic" onclick="deleteCurrentItem()" title="Delete" style="color: #ff4545;"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-            <textarea class="code-area" id="editor" placeholder="Start typing..."></textarea>
-        </section>
-
-        <section class="glass-panel preview-zone">
-            <div class="preview-header">
-                <div><span class="dot"></span> <span id="previewLabel">LIVE OUTPUT</span></div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div id="saveStatus" style="color: var(--accent-purple); font-size: 0.75rem;">Saved</div>
-                    <button class="icon-btn magnetic" id="fullscreenBtn" onclick="toggleFullscreen()" style="width:32px; height:32px;"><i class="fa-solid fa-expand"></i></button>
-                </div>
-            </div>
-            <div class="iframe-wrapper">
-                <iframe id="outputFrame" sandbox="allow-scripts"></iframe>
-            </div>
-        </section>
-
+        <!-- Omni Navigation Bar -->
+        <nav class="omni-nav-dock">
+            <button class="dock-item active" onclick="navigateTo('page-tasks', this)">
+                <i data-lucide="compass"></i>Focus
+            </button>
+            <button class="dock-item" onclick="navigateTo('page-dashboard', this)">
+                <i data-lucide="clover"></i>Insights
+            </button>
+            <button class="dock-item" onclick="navigateTo('page-calendar', this)">
+                <i data-lucide="calendar-range"></i>Timeline
+            </button>
+        </nav>
     </div>
 
-    <!-- LOGIC ENGINE -->
+    <!-- CODE LOGIC ARCHITECTURE -->
     <script>
-        const defaultCodeData = [{ id: 101, title: "Neon Glass Button", code: "<style>\n  body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }\n  .btn { background: rgba(176, 38, 255, 0.1); border: 1px solid rgba(176, 38, 255, 0.5); color: #fff; padding: 15px 30px; border-radius: 12px; font-size: 16px; cursor: pointer; backdrop-filter: blur(10px); box-shadow: 0 0 20px rgba(176, 38, 255, 0.2); transition: all 0.3s; }\n  .btn:hover { background: rgba(176, 38, 255, 0.3); box-shadow: 0 0 30px rgba(176, 38, 255, 0.5); transform: translateY(-2px); }\n</style>\n<button class=\"btn\">Hover Me</button>" }];
-        const defaultPromptData = [{ id: 201, title: "Cyberpunk Story Generator", code: "คุณคือ AI นักแต่งนิยาย Sci-Fi\n\nโจทย์: สร้างพล็อตเรื่องสั้นเกี่ยวกับแฮกเกอร์ที่ค้นพบความลับในระบบของรัฐบาล\nMood & Tone: มืดมน, ฝนตก, นีออน, ลุ้นระทึก" }];
+        const STORAGE_KEY = 'zenith_tasks_v2';
+        let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        
+        let editingTaskId = null;
+        let selectedCalendarDate = null;
 
-        let currentMode = 'code', storage = [], activeId = null, isFullscreen = false, debounceTimer;
+        function getTodayString() {
+            const today = new Date();
+            return `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+        }
+        
+        if(tasks.length === 0) {
+            tasks = [
+                { id: 1, title: "ส่งแผนกลยุทธ์ FinTech ประจำปี", category: "Work", date: getFutureDateString(1), completed: false },
+                { id: 2, title: "ชำระยอดบัตรเครดิตและกองทุน", category: "Finance", date: getFutureDateString(2), completed: false },
+                { id: 3, title: "Cardio คุมอัตราการเต้นหัวใจ (Zone 2)", category: "Fitness", date: getTodayString(), completed: true }
+            ];
+            saveTasks();
+        }
+        
+        selectedCalendarDate = getTodayString();
+        document.getElementById('form-date').value = getTodayString();
 
-        /* --- MAGNETIC BUTTON EFFECT --- */
-        function initMagneticButtons() {
-            document.querySelectorAll('.magnetic').forEach(btn => {
-                btn.addEventListener('mousemove', (e) => {
-                    const rect = btn.getBoundingClientRect();
-                    const x = e.clientX - rect.left - rect.width / 2;
-                    const y = e.clientY - rect.top - rect.height / 2;
-                    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-                    btn.style.transition = 'none';
-                });
-                btn.addEventListener('mouseleave', () => {
-                    btn.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-                    btn.style.transform = `translate(0px, 0px)`;
-                });
-            });
+        function getFutureDateString(daysToAdd) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysToAdd);
+            return `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
         }
 
-        // Initialize System
-        function initSystemMode() {
-            const key = currentMode === 'code' ? 'neo_vault_v3_code' : 'neo_vault_v3_prompt';
-            storage = JSON.parse(localStorage.getItem(key)) || (currentMode === 'code' ? defaultCodeData : defaultPromptData);
-            activeId = storage.length > 0 ? storage[0].id : Date.now();
+        function saveTasks() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        }
+
+        // --- Dark Mode Controller ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('zenith_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            updateThemeIcon();
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('zenith_theme', newTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const iconEl = document.getElementById('theme-icon');
+            if(currentTheme === 'dark') {
+                iconEl.setAttribute('data-lucide', 'sun');
+            } else {
+                iconEl.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+        }
+
+        function isNearDeadline(taskDateStr, isCompleted) {
+            if (isCompleted || !taskDateStr) return false;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
             
-            document.getElementById('actionBtn').innerHTML = currentMode === 'code' ? `<i class="fa-solid fa-plus"></i> Code` : `<i class="fa-solid fa-plus"></i> Prompt`;
-            document.getElementById('editor').style.fontFamily = currentMode === 'code' ? "'Fira Code', monospace" : "'Plus Jakarta Sans', sans-serif";
-            document.getElementById('previewLabel').innerText = currentMode === 'code' ? `WEB PREVIEW` : `PROMPT VIEW`;
+            const [y, m, d] = taskDateStr.split('-');
+            const taskDate = new Date(y, m - 1, d);
+            taskDate.setHours(0, 0, 0, 0);
             
-            document.getElementById('searchInput').value = '';
-            renderSidebar();
-            selectItem(activeId);
+            const timeDiff = taskDate.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            return daysDiff >= 0 && daysDiff <= 2; 
         }
 
-        function switchSystemMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`mode-${mode}`).classList.add('active');
-            initSystemMode();
+        // Fluid Page Navigation
+        function navigateTo(pageId, element) {
+            const currentActivePage = document.querySelector('.app-page.active');
+            const targetPage = document.getElementById(pageId);
+            
+            if (currentActivePage) {
+                currentActivePage.style.opacity = '0';
+                currentActivePage.style.transform = 'translateY(12px) scale(0.98)';
+                setTimeout(() => {
+                    currentActivePage.classList.remove('active');
+                    executePageShow(targetPage, pageId, element);
+                }, 200);
+            } else {
+                executePageShow(targetPage, pageId, element);
+            }
         }
 
-        document.getElementById('searchInput').addEventListener('input', (e) => renderSidebar(e.target.value));
+        function executePageShow(targetPage, pageId, element) {
+            document.querySelectorAll('.dock-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            
+            targetPage.classList.add('active');
+            targetPage.offsetHeight; 
+            targetPage.style.opacity = '1';
+            targetPage.style.transform = 'translateY(0) scale(1)';
+            
+            if (pageId === 'page-calendar') renderCalendar();
+            if (pageId === 'page-dashboard') updateDashboardStats();
+            if (pageId === 'page-tasks') renderTaskList();
+        }
 
-        function renderSidebar(filterText = '') {
-            const container = document.getElementById('listContainer');
+        // Render Cards with Filter Capability
+        function renderTaskList() {
+            const container = document.getElementById('task-list-container');
+            const searchQuery = document.getElementById('search-category').value.trim().toLowerCase();
             container.innerHTML = '';
-            const lowerFilter = filterText.toLowerCase();
 
-            const filtered = storage.filter(item => (item.title && item.title.toLowerCase().includes(lowerFilter)) || (item.code && item.code.toLowerCase().includes(lowerFilter)));
+            // Filter tasks based on Category Search
+            const filteredData = tasks.filter(task => {
+                if (!searchQuery) return true;
+                return task.category && task.category.toLowerCase().includes(searchQuery);
+            });
 
-            if (!filtered.length) return container.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:20px; font-size:0.9rem;">No data.</p>`;
+            if(filteredData.length === 0) {
+                container.innerHTML = `<div class="empty-lux-state"><i data-lucide="wind" style="width:32px; height:32px; stroke-width:1.5; margin-bottom:8px;"></i><br>No matching strategies found.</div>`;
+                lucide.createIcons();
+                return;
+            }
 
-            filtered.forEach(item => {
+            const sortedTasks = [...filteredData].sort((a, b) => {
+                if (a.completed !== b.completed) return a.completed ? 1 : -1;
+                return new Date(a.date) - new Date(b.date);
+            });
+
+            sortedTasks.forEach((task) => {
+                const urgent = isNearDeadline(task.date, task.completed);
                 const card = document.createElement('div');
-                card.className = `snippet-card ${item.id === activeId ? 'active' : ''}`;
-                card.onclick = () => selectItem(item.id);
-                const cleanPreview = (item.code || "").replace(/</g, "&lt;").substring(0, 40);
-                card.innerHTML = `<h5>${item.title || 'Untitled'}</h5><p>${cleanPreview || '...'}</p>`;
+                card.className = `task-card-luxury ${task.completed ? 'completed' : ''} ${urgent ? 'deadline-pulse' : ''}`;
+                card.setAttribute('data-id', task.id);
+                
+                card.innerHTML = `
+                    <div class="task-left">
+                        <label class="elastic-checkbox">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                            <span class="checkmark-disk"><i data-lucide="check"></i></span>
+                        </label>
+                        <div class="task-detail-block">
+                            <span class="luxury-title">${escapeHtml(task.title)}</span>
+                            <div class="badge-row">
+                                <span class="luxury-badge category-tag">${escapeHtml(task.category || 'General')}</span>
+                                <span class="luxury-badge"><i data-lucide="calendar" style="width:10px; height:10px;"></i>${task.date}</span>
+                                <span class="luxury-badge deadline-alert" style="display: ${urgent ? 'inline-flex' : 'none'}">Urgent</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-control-group">
+                        <button class="control-trigger" onclick="startEditTask(${task.id})"><i data-lucide="sliders-horizontal" style="width:15px; height:15px;"></i></button>
+                        <button class="control-trigger trash" onclick="deleteTask(${task.id})"><i data-lucide="cross" style="width:15px; height:15px; transform:rotate(45deg);"></i></button>
+                    </div>
+                `;
                 container.appendChild(card);
             });
+            lucide.createIcons();
         }
 
-        function selectItem(id) {
-            activeId = id;
-            const current = storage.find(i => i.id === id);
-            if(current) {
-                document.getElementById('titleInput').value = current.title;
-                document.getElementById('editor').value = current.code;
-                liveRender();
-                renderSidebar(document.getElementById('searchInput').value);
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if(!task) return;
+            task.completed = !task.completed;
+            saveTasks();
+
+            document.querySelectorAll(`.task-card-luxury[data-id="${id}"]`).forEach(card => {
+                const isCompleted = task.completed;
+                card.classList.toggle('completed', isCompleted);
+                
+                const chk = card.querySelector('input[type="checkbox"]');
+                if(chk) chk.checked = isCompleted;
+                
+                if(isCompleted) card.classList.remove('deadline-pulse');
+            });
+
+            updateDashboardStats();
+        }
+
+        function handleFormSubmit() {
+            const titleInput = document.getElementById('form-title');
+            const catInput = document.getElementById('form-category');
+            const dateInput = document.getElementById('form-date');
+
+            if(!titleInput.value.trim() || !dateInput.value) return;
+
+            const finalCategory = catInput.value.trim() || "General";
+
+            if(editingTaskId) {
+                const index = tasks.findIndex(t => t.id === editingTaskId);
+                if(index > -1) {
+                    tasks[index].title = titleInput.value.trim();
+                    tasks[index].category = finalCategory;
+                    tasks[index].date = dateInput.value;
+                }
+                cancelEdit();
+            } else {
+                tasks.push({
+                    id: Date.now(),
+                    title: titleInput.value.trim(),
+                    category: finalCategory,
+                    date: dateInput.value,
+                    completed: false
+                });
+                titleInput.value = '';
+                catInput.value = '';
             }
-            if(window.innerWidth <= 900) switchMobileView('editor');
+
+            saveTasks();
+            renderTaskList();
+            updateDashboardStats();
         }
 
-        function handleInputActivity() {
-            const statusNode = document.getElementById('saveStatus');
-            statusNode.innerText = "Typing...";
-            statusNode.style.color = "var(--text-gray)";
+        function startEditTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if(!task) return;
 
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                saveCurrentData();
-                liveRender();
-            }, 600);
-        }
+            editingTaskId = id;
+            document.getElementById('form-title').value = task.title;
+            document.getElementById('form-category').value = task.category;
+            document.getElementById('form-date').value = task.date;
 
-        document.getElementById('editor').addEventListener('input', handleInputActivity);
-        document.getElementById('titleInput').addEventListener('input', handleInputActivity);
-
-        document.getElementById('editor').addEventListener('keydown', function(e) {
-            if (e.key === 'Tab') {
-                e.preventDefault();
-                const start = this.selectionStart, end = this.selectionEnd;
-                this.value = this.value.substring(0, start) + "  " + this.value.substring(end);
-                this.selectionStart = this.selectionEnd = start + 2;
-                handleInputActivity();
-            }
-        });
-
-        function liveRender() {
-            const code = document.getElementById('editor').value;
-            const iframe = document.getElementById('outputFrame');
+            const btn = document.getElementById('main-submit-btn');
+            btn.classList.add('edit-mode-active');
+            btn.innerHTML = `<i data-lucide="check" style="width: 18px; height: 18px;"></i> <span>Update Strategy</span>`;
+            document.getElementById('cancel-edit-btn').style.display = 'flex';
             
-            if (currentMode === 'code') { iframe.srcdoc = code; } 
-            else {
-                iframe.srcdoc = `
-                    <!DOCTYPE html><html><head><style>
-                        body { background: #0c0814; color: #f8f6fb; font-family: system-ui; padding: 20px; line-height: 1.6; }
-                        .box { border: 1px solid rgba(176,38,255,0.2); padding: 20px; background: rgba(176,38,255,0.05); border-radius: 16px; white-space: pre-wrap; word-wrap: break-word; }
-                        .tag { display: inline-block; background: var(--accent-purple); color: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 15px; }
-                    </style></head><body>
-                        <div class="tag">PROMPT</div>
-                        <div class="box">${code ? code.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'Empty...'}</div>
-                    </body></html>`;
+            navigateTo('page-tasks', document.querySelector('.dock-item:nth-child(1)'));
+            lucide.createIcons();
+        }
+
+        function cancelEdit() {
+            editingTaskId = null;
+            document.getElementById('form-title').value = '';
+            document.getElementById('form-category').value = '';
+            document.getElementById('form-date').value = getTodayString();
+            
+            const btn = document.getElementById('main-submit-btn');
+            btn.classList.remove('edit-mode-active');
+            btn.innerHTML = `<i data-lucide="plus" style="width: 18px; height: 18px;"></i> <span>Create Task</span>`;
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+            lucide.createIcons();
+        }
+
+        function deleteTask(id) {
+            const card = document.querySelector(`.task-card-luxury[data-id="${id}"]`);
+            if(card) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9) translateY(10px)';
+                setTimeout(() => {
+                    tasks = tasks.filter(t => t.id !== id);
+                    saveTasks();
+                    renderTaskList();
+                    updateDashboardStats();
+                }, 300);
             }
         }
 
-        function saveCurrentData() {
-            const current = storage.find(i => i.id === activeId);
-            if(current) {
-                current.title = document.getElementById('titleInput').value;
-                current.code = document.getElementById('editor').value;
-                updateLocalStorage();
-                renderSidebar(document.getElementById('searchInput').value);
+        function updateDashboardStats() {
+            const total = tasks.length;
+            const completed = tasks.filter(t => t.completed).length;
+            const pending = total - completed;
+            const deadlineCount = tasks.filter(t => isNearDeadline(t.date, t.completed)).length;
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            const percentEl = document.getElementById('dash-percent');
+            if(percentEl) percentEl.innerText = `${percent}%`;
+            
+            const barFill = document.getElementById('dash-bar-fill');
+            if(barFill) barFill.style.width = `${percent}%`;
+            
+            const progressTxt = document.getElementById('dash-progress-text');
+            if(progressTxt) progressTxt.innerText = `${completed} of ${total} goals finalized`;
+            
+            document.getElementById('dash-all-count').innerText = total;
+            document.getElementById('dash-completed-count').innerText = completed;
+            document.getElementById('dash-pending-count').innerText = pending;
+            
+            const deadCountEl = document.getElementById('dash-deadline-count');
+            deadCountEl.innerText = deadlineCount;
+            
+            const deadCard = document.getElementById('dash-card-deadline');
+            if(deadlineCount > 0) {
+                deadCard.style.borderColor = 'rgba(255,59,48,0.3)';
+                deadCountEl.style.color = 'var(--danger)';
+            } else {
+                deadCard.style.borderColor = 'var(--border-crisp)';
+                deadCountEl.style.color = 'var(--text-primary)';
             }
         }
 
-        function updateLocalStorage() {
-            const key = currentMode === 'code' ? 'neo_vault_v3_code' : 'neo_vault_v3_prompt';
-            const statusNode = document.getElementById('saveStatus');
-            try {
-                localStorage.setItem(key, JSON.stringify(storage));
-                statusNode.innerText = "Saved"; statusNode.style.color = "var(--accent-purple)";
-            } catch (e) {
-                statusNode.innerText = "Storage Full!"; statusNode.style.color = "#ff4545";
-                alert("⚠️ LocalStorage is full!");
+        // Architectural Calendar Core
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth(); 
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-month-year').innerText = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            dayNames.forEach(d => {
+                const h = document.createElement('div');
+                h.className = 'cal-weekday';
+                h.innerText = d;
+                grid.appendChild(h);
+            });
+
+            const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+            for(let i = 0; i < firstDayOfMonth; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'cal-unit-day blank';
+                grid.appendChild(empty);
             }
+
+            const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const todayStr = getTodayString();
+
+            for(let day = 1; day <= totalDaysInMonth; day++) {
+                const dateString = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const dayEl = document.createElement('div');
+                dayEl.className = 'cal-unit-day';
+                dayEl.innerText = day;
+                dayEl.setAttribute('data-date', dateString);
+
+                if(dateString === todayStr) dayEl.classList.add('current');
+                if(dateString === selectedCalendarDate) dayEl.classList.add('active-select');
+
+                dayEl.onclick = () => {
+                    document.querySelectorAll('.cal-unit-day').forEach(el => el.classList.remove('active-select'));
+                    dayEl.classList.add('active-select');
+                    selectedCalendarDate = dateString;
+                    renderCalendarTaskList(dateString);
+                };
+
+                grid.appendChild(dayEl);
+            }
+            
+            updateCalendarDotsOnly();
+            renderCalendarTaskList(selectedCalendarDate);
         }
 
-        function addNewItem() {
-            const newId = Date.now();
-            storage.unshift({ id: newId, title: "Untitled", code: "" });
-            activeId = newId; updateLocalStorage();
-            document.getElementById('searchInput').value = '';
-            renderSidebar(); selectItem(newId);
-            document.getElementById('editor').focus();
-        }
+        function updateCalendarDotsOnly() {
+            document.querySelectorAll('.cal-unit-day[data-date]').forEach(dayEl => {
+                const dateString = dayEl.getAttribute('data-date');
+                const dayTasks = tasks.filter(t => t.date === dateString);
+                
+                const oldDot = dayEl.querySelector('.cal-dot');
+                if(oldDot) oldDot.remove();
 
-        function deleteCurrentItem() {
-            if(storage.length <= 1) return alert("Cannot delete the last item.");
-            if(!confirm("Delete this item?")) return;
-            storage = storage.filter(i => i.id !== activeId);
-            activeId = storage[0].id; updateLocalStorage(); selectItem(activeId);
-        }
-
-        function insertTemplate() {
-            document.getElementById('editor').value = currentMode === 'code' 
-                ? `<!DOCTYPE html>\n<style>\n  body { font-family: sans-serif; padding: 20px; }\n</style>\n<body>\n  <h2>Hello World</h2>\n</body>`
-                : `[Role]: ...\n[Task]: ...\n[Format]: ...`;
-            handleInputActivity();
-        }
-
-        function copyToClipboard() {
-            navigator.clipboard.writeText(document.getElementById('editor').value).then(() => {
-                const btn = document.getElementById('copyBtn');
-                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
-                setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-copy"></i>', 1500);
+                if(dayTasks.length > 0) {
+                    const hasUrgent = dayTasks.some(t => isNearDeadline(t.date, t.completed));
+                    const dot = document.createElement('div');
+                    dot.className = `cal-dot ${hasUrgent ? 'critical' : ''}`;
+                    dayEl.appendChild(dot);
+                }
             });
         }
 
-        function exportData() {
-            const blob = new Blob([JSON.stringify(storage, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `NeoVault_V3_${currentMode}_${Date.now()}.json`;
-            a.click();
+        function renderCalendarTaskList(dateString) {
+            const listCalContainer = document.getElementById('calendar-task-list');
+            const title = document.getElementById('calendar-list-title');
+            listCalContainer.innerHTML = '';
+            
+            const [y, m, d] = dateString.split('-');
+            title.innerText = `Agenda — ${parseInt(d)}/${parseInt(m)}/${y}`;
+
+            const filteredTasks = tasks.filter(t => t.date === dateString);
+            if(filteredTasks.length === 0) {
+                listCalContainer.innerHTML = `<div class="empty-lux-state">No strategy planned for this date.</div>`;
+                return;
+            }
+
+            filteredTasks.forEach(task => {
+                const item = document.createElement('div');
+                item.className = `task-card-luxury ${task.completed ? 'completed' : ''}`;
+                item.style.padding = '14px 18px';
+                
+                item.innerHTML = `
+                    <div class="task-left">
+                        <label class="elastic-checkbox">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}); renderCalendarTaskList('${dateString}');">
+                            <span class="checkmark-disk"><i data-lucide="check"></i></span>
+                        </label>
+                        <span class="luxury-title" style="font-size:14px;">${escapeHtml(task.title)}</span>
+                    </div>
+                `;
+                listCalContainer.appendChild(item);
+            });
+            lucide.createIcons();
         }
 
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if(Array.isArray(imported)) {
-                        storage = imported; updateLocalStorage();
-                        document.getElementById('searchInput').value = '';
-                        renderSidebar(); selectItem(storage[0].id);
-                    }
-                } catch(err) { alert("Invalid file."); }
-                event.target.value = '';
-            };
-            reader.readAsText(file);
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        function switchMobileView(viewName) {
-            const layout = document.getElementById('mainLayout');
-            layout.className = 'main-layout';
-            layout.classList.add(`show-${viewName}`);
-            document.querySelectorAll('.switch-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${viewName}`).classList.add('active');
-        }
-
-        function toggleFullscreen() {
-            isFullscreen = !isFullscreen;
-            document.body.classList.toggle('fullscreen-mode');
-            const btn = document.getElementById('fullscreenBtn');
-            btn.innerHTML = isFullscreen ? '<i class="fa-solid fa-compress"></i>' : '<i class="fa-solid fa-expand"></i>';
-        }
-
-        window.onload = () => {
-            initSystemMode();
-            initMagneticButtons();
-        };
+        // Init Stage
+        initTheme();
+        renderTaskList();
+        updateDashboardStats();
+        lucide.createIcons();
     </script>
 </body>
 </html>
